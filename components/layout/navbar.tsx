@@ -36,7 +36,7 @@ const Navbar = () => {
             asChild
           >
             <Link href="/cart">
-              <span className="relative">
+              <span id="cart-icon" className="relative">
                 <svg
                   width="26"
                   height="26"

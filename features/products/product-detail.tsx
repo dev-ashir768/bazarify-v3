@@ -29,6 +29,16 @@ import { CartItems, ProductVariation, SelectedAttributes } from "@/types";
 import { formattedAmount } from "@/lib/formated-amount";
 import { ProductDetailsHelper } from "@/helper_functions/product.helper";
 import { useCartStore } from "@/store/useCartStore";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface FlyingItem {
+  id: number;
+  x: number;
+  y: number;
+  targetX: number;
+  targetY: number;
+  image: string;
+}
 
 interface ProductDetailProps {
   productId: number;
@@ -44,6 +54,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   const [hovering, setHovering] = useState(false);
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
+  const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
   const { addItem } = useCartStore();
 
   React.useEffect(() => {
@@ -174,36 +185,63 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     setQuantity((prev) => Math.max(1, prev - 1));
   }, []);
 
-  const handleAddToCart = useCallback(() => {
-    const data: CartItems = {
-      acno: acno,
-      order_ref: orderRef,
-      platform_id: 1,
-      payment_method_id: 1,
-      line_items: {
-        product_id: Number(productId),
-        variation_id: Number(activeVariation?.variation_id ?? 0),
-        location_id: Number(maxInventoryItem?.location_id ?? 0),
-        quantity: quantity,
-        product_image: resolvedImage,
-      },
-      product_name: payload?.product_name ?? "",
-      price: resolvedPrice!,
-    };
+  const handleAddToCart = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const data: CartItems = {
+        acno: acno,
+        order_ref: orderRef,
+        platform_id: 1,
+        payment_method_id: 1,
+        line_items: {
+          product_id: Number(productId),
+          variation_id: Number(activeVariation?.variation_id ?? 0),
+          location_id: Number(maxInventoryItem?.location_id ?? 0),
+          quantity: quantity,
+          product_image: resolvedImage,
+        },
+        product_name: payload?.product_name ?? "",
+        price: resolvedPrice!,
+      };
 
-    addItem(data);
-  }, [
-    activeVariation,
-    quantity,
-    resolvedImage,
-    resolvedPrice,
-    payload?.product_name,
-    orderRef,
-    addItem,
-    acno,
-    maxInventoryItem?.location_id,
-    productId,
-  ]);
+      // Get positions for animation
+      const buttonRect = e.currentTarget.getBoundingClientRect();
+      const cartIcon = document.getElementById("cart-icon");
+      const cartRect = cartIcon?.getBoundingClientRect();
+
+      if (cartRect) {
+        const newItem: FlyingItem = {
+          id: Date.now(),
+          x: buttonRect.left + buttonRect.width / 2,
+          y: buttonRect.top + buttonRect.height / 2,
+          targetX: cartRect.left + cartRect.width / 2,
+          targetY: cartRect.top + cartRect.height / 2,
+          image: resolvedImage,
+        };
+
+        setFlyingItems((prev) => [...prev, newItem]);
+
+        // Clean up the animated item after it completes
+        setTimeout(() => {
+          setFlyingItems((prev) => prev.filter((item) => item.id !== newItem.id));
+          addItem(data);
+        }, 800);
+      } else {
+        addItem(data);
+      }
+    },
+    [
+      activeVariation,
+      quantity,
+      resolvedImage,
+      resolvedPrice,
+      payload?.product_name,
+      orderRef,
+      addItem,
+      acno,
+      maxInventoryItem?.location_id,
+      productId,
+    ],
+  );
 
   // ========================= Render ========================= \\
   if (isLoading) {
@@ -439,6 +477,44 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {flyingItems.map((item) => (
+          <motion.div
+            key={item.id}
+            initial={{
+              position: "fixed",
+              top: item.y,
+              left: item.x,
+              width: 50,
+              height: 50,
+              opacity: 1,
+              zIndex: 9999,
+              borderRadius: "100%",
+              overflow: "hidden",
+            }}
+            animate={{
+              top: item.targetY,
+              left: item.targetX,
+              scale: [1, 1.2, 0.2],
+              opacity: [1, 0.8, 0],
+            }}
+            transition={{
+              duration: 0.8,
+              ease: "easeInOut",
+            }}
+            className="pointer-events-none"
+          >
+            <div className="relative w-full h-full bg-primary flex items-center justify-center p-1">
+              <img
+                src={item.image}
+                alt="flying-item"
+                className="w-full h-full object-cover rounded-full"
+              />
+            </div>
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </>
   );
 };
