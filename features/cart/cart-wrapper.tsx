@@ -33,7 +33,7 @@ const CartWrapper = () => {
 
         <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
         <p className="text-muted-foreground mb-8 max-w-md">
-          Looks like you haven't added anything to your cart yet. Explore our
+          Looks like you haven&apos;t added anything to your cart yet. Explore our
           marketplace to find amazing products!
         </p>
         <Button size="xl" className="rounded-2xl px-12" asChild>

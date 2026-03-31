@@ -113,13 +113,13 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
       "/" +
       payload?.default_image
     );
-  }, [payload]);
+  }, [payload, acno]);
 
   const maxQuantity = useMemo(() => {
     if (activeVariation) {
       return ProductDetailsHelper.getMaxInventory(activeVariation.inventory);
     }
-    return ProductDetailsHelper.getMaxInventory(payload?.default_inventory!);
+    return ProductDetailsHelper.getMaxInventory(payload?.default_inventory ?? []);
   }, [activeVariation, payload]);
 
   const maxInventoryItem = useMemo(() => {
@@ -129,7 +129,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
       );
     }
     return ProductDetailsHelper.getMaxInventoryItem(
-      payload?.default_inventory!,
+      payload?.default_inventory ?? [],
     );
   }, [activeVariation, payload]);
 
@@ -187,7 +187,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
         quantity: quantity,
         product_image: resolvedImage,
       },
-      product_name: payload?.product_name!,
+      product_name: payload?.product_name ?? "",
       price: resolvedPrice!,
     };
 
@@ -200,6 +200,9 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     payload?.product_name,
     orderRef,
     addItem,
+    acno,
+    maxInventoryItem?.location_id,
+    productId,
   ]);
 
   // ========================= Render ========================= \\
@@ -281,7 +284,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                     <Lens hovering={hovering} setHovering={setHovering}>
                       <ImageFallback
                         src={resolvedImage}
-                        alt={productDetail?.payload.product_name!}
+                        alt={productDetail?.payload.product_name ?? ""}
                         fill
                         className="object-contain"
                         fallbackSrc="https://placehold.co/600x600/F6F6F6/474747/png?text=Not+Found"
