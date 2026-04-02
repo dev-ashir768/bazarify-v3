@@ -28,8 +28,7 @@ const ProductCard = ({
             key={sku_code}
             alt={image}
             fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+              className="object-contain transition-transform duration-300 ease-in-out hover:scale-105"
             src={
               image?.startsWith("http")
                 ? image
@@ -42,7 +41,8 @@ const ProductCard = ({
             fallbackSrc={
               "https://placehold.co/251x251/F6F6F6/474747/png?text=Not+Found"
             }
-            unoptimized
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+            loading="eager"
           />
         </Link>
         <div className="px-2">

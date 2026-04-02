@@ -30,6 +30,7 @@ import { formattedAmount } from "@/lib/formated-amount";
 import { ProductDetailsHelper } from "@/helper_functions/product.helper";
 import { useCartStore } from "@/store/useCartStore";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 interface FlyingItem {
   id: number;
@@ -506,9 +507,10 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
             className="pointer-events-none"
           >
             <div className="relative w-full h-full bg-primary flex items-center justify-center p-1">
-              <img
+              <Image
                 src={item.image}
                 alt="flying-item"
+                fill
                 className="w-full h-full object-cover rounded-full"
               />
             </div>
