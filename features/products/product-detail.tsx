@@ -31,6 +31,7 @@ import { ProductDetailsHelper } from "@/helper_functions/product.helper";
 import { useCartStore } from "@/store/useCartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface FlyingItem {
   id: number;
@@ -56,7 +57,8 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
   const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
-  const { addItem } = useCartStore();
+  const { addItem, totalItems } = useCartStore();
+  const router = useRouter();
 
   React.useEffect(() => {
     if (!mainApi || !thumbApi) return;
@@ -131,7 +133,9 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     if (activeVariation) {
       return ProductDetailsHelper.getMaxInventory(activeVariation.inventory);
     }
-    return ProductDetailsHelper.getMaxInventory(payload?.default_inventory ?? []);
+    return ProductDetailsHelper.getMaxInventory(
+      payload?.default_inventory ?? [],
+    );
   }, [activeVariation, payload]);
 
   const maxInventoryItem = useMemo(() => {
@@ -223,7 +227,9 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
 
         // Clean up the animated item after it completes
         setTimeout(() => {
-          setFlyingItems((prev) => prev.filter((item) => item.id !== newItem.id));
+          setFlyingItems((prev) =>
+            prev.filter((item) => item.id !== newItem.id),
+          );
           addItem(data);
         }, 800);
       } else {
@@ -242,6 +248,21 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
       maxInventoryItem?.location_id,
       productId,
     ],
+  );
+
+  const handleBuyNow = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (totalItems() === 0) {
+        handleAddToCart(e);
+
+        setTimeout(() => {
+          router.push(PUBLIC_ROUTES.CART);
+        }, 800);
+      } else {
+        router.push(PUBLIC_ROUTES.CART);
+      }
+    },
+    [handleAddToCart, router, totalItems],
   );
 
   // ========================= Render ========================= \\
@@ -463,9 +484,11 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
             <Button
               size="xl"
               className="w-full rounded-2xl text-base font-semibold"
-              asChild
+              onClick={handleBuyNow}
+              disabled={isOutOfStock || (hasVariations && !activeVariation)}
             >
-              <Link href={PUBLIC_ROUTES.CART}>Buy Now</Link>
+              {/* <Link href={PUBLIC_ROUTES.CART}>Buy Now</Link> */}
+              Buy Now
             </Button>
           </div>
 
