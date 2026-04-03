@@ -18,6 +18,7 @@ const HomeWrapper = () => {
   const category = searchParams.get("category");
   const minPrice = searchParams.get("minPrice");
   const maxPrice = searchParams.get("maxPrice");
+  const search = searchParams.get("search");
 
   // ========================= Data Fetching ========================= \\
   const {
@@ -35,7 +36,10 @@ const HomeWrapper = () => {
     categoryId: categoryId ? [categoryId] : undefined,
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
     minPrice: minPrice ? Number(minPrice) : undefined,
+    search: search ? search : undefined,
   };
+
+  console.log(data);
 
   const {
     data: products,
@@ -65,7 +69,6 @@ const HomeWrapper = () => {
 
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
 
   const allProducts = products?.pages.flatMap((page) => page.payload) || [];
 

@@ -18,6 +18,7 @@ export const ProductServices = {
         ...(data.categoryId && { marketplace_category_id: data.categoryId }),
         ...(data.minPrice !== undefined && { min_price: data.minPrice }),
         ...(data.maxPrice !== undefined && { max_price: data.maxPrice }),
+        ...(data.search && { search: data.search }),
       },
     );
     return response;

@@ -16,7 +16,7 @@ export const LoadingSkeleton = {
   CategorySkeleton: () => (
     <div className="w-full overflow-hidden">
       <div className="container flex items-center justify-start sm:justify-center gap-3 sm:gap-6 overflow-x-auto no-scrollbar pb-2 sm:pb-0 flex-nowrap sm:flex-wrap">
-        {[96, 121, 153, 114, 110, 164, 192, 107, 126].map((width, i) => (
+        {[96, 121, 153, 114, 110, 164, 107, 126].map((width, i) => (
           <Skeleton
             key={i}
             className={cn(`shrink-0 rounded-full h-12 bg-card`)}

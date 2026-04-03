@@ -34,6 +34,7 @@ export interface GetProductsListParams {
   minPrice?: number;
   limit?: number;
   offset?: number;
+  search?: string;
 }
 
 // ========================= Product Detail ========================= \\

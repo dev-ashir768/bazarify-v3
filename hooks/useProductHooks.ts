@@ -13,6 +13,7 @@ export const useProductHooks = {
         ...(data.categoryId ? [data.categoryId] : []),
         ...(data.maxPrice ? [data.maxPrice] : []),
         ...(data.minPrice ? [data.minPrice] : []),
+        ...(data.search ? [data.search] : []),
       ],
       queryFn: ({ pageParam = 0 }) =>
         ProductServices.getProductsByCategory({

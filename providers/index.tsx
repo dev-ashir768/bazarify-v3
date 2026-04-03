@@ -1,6 +1,8 @@
 import React from "react";
 import { ThemeProvider } from "./theme-provider";
 import QueryProvider from "./query-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "sonner";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -10,7 +12,12 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     // enableSystem
     // disableTransitionOnChange
     >
-      <QueryProvider>{children}</QueryProvider>
+      <TooltipProvider>
+        <QueryProvider>
+          {children}
+          <Toaster richColors closeButton position="bottom-right" />
+        </QueryProvider>
+      </TooltipProvider>
     </ThemeProvider>
   );
 };
