@@ -32,6 +32,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface FlyingItem {
   id: number;
@@ -57,7 +58,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
   const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
-  const { addItem, totalItems } = useCartStore();
+  const { addItem, totalItems, items } = useCartStore();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -151,7 +152,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
 
   const isOutOfStock = maxQuantity <= 0;
 
-  const orderRef = useMemo(() => {
+  const itemRef = useMemo(() => {
     return `${productId}-${activeVariation?.variation_id ?? "default"}`;
   }, [productId, activeVariation]);
 
@@ -194,9 +195,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     (e: React.MouseEvent<HTMLButtonElement>) => {
       const data: CartItems = {
         acno: acno,
-        order_ref: orderRef,
-        platform_id: 1,
-        payment_method_id: 1,
+        item_ref: itemRef,
         line_items: {
           product_id: Number(productId),
           variation_id: Number(activeVariation?.variation_id ?? 0),
@@ -207,6 +206,11 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
         product_name: payload?.product_name ?? "",
         price: resolvedPrice!,
       };
+
+      if (items.length > 0 && items[0].acno !== acno) {
+        toast.error("You can only add items from one store at a time.");
+        return;
+      }
 
       // Get positions for animation
       const buttonRect = e.currentTarget.getBoundingClientRect();
@@ -242,16 +246,22 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
       resolvedImage,
       resolvedPrice,
       payload?.product_name,
-      orderRef,
+      itemRef,
       addItem,
       acno,
       maxInventoryItem?.location_id,
       productId,
+      items
     ],
   );
 
   const handleBuyNow = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (items.length > 0 && items[0].acno !== acno) {
+        toast.error("You can only add items from one store at a time.");
+        return;
+      }
+
       if (totalItems() === 0) {
         handleAddToCart(e);
 
@@ -262,7 +272,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
         router.push(PUBLIC_ROUTES.CART);
       }
     },
-    [handleAddToCart, router, totalItems],
+    [handleAddToCart, router, totalItems, acno, items],
   );
 
   // ========================= Render ========================= \\

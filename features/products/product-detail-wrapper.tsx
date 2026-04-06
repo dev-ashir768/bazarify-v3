@@ -1,102 +1,88 @@
+"use client";
+
+import { useProductHooks } from "@/hooks/useProductHooks";
 import ProductCard from "./product-card";
 import ProductDetail from "./product-detail";
+import { GetProductsListParams } from "@/types";
+import { useCategoryHooks } from "@/hooks/useCategoryHooks";
+import { useSearchParams } from "next/navigation";
+import { LoadingSkeleton } from "@/components/shared/loading-skeleton";
+import { ErrorState } from "@/components/shared/error-state";
 
 interface ProductDetailWrapperProps {
   productId: number;
   acno: string;
 }
 
-const products = [
-  {
-    id: "1",
-    acno: "0",
-    product_name: "Wireless Noise Cancelling Headphones",
-    price: "100",
-    sale_price: "0",
-    image: "https://placehold.co/600x600/F6F6F6/474747/png?text=Headphones",
-    on_sale: "N" as const,
-    sku_code: "SKU001",
-    business_name: "SoundMax",
-    inventory_policy: "deny",
-    product_weight: "0.5",
-    type: "simple",
-  },
-  {
-    id: "2",
-    acno: "0",
-    product_name: "Smart Fitness Watch Pro",
-    price: "120",
-    sale_price: "0",
-    image: "https://placehold.co/600x600/F6F6F6/474747/png?text=Watch",
-    on_sale: "N" as const,
-    sku_code: "SKU002",
-    business_name: "FitCore",
-    inventory_policy: "deny",
-    product_weight: "0.2",
-    type: "simple",
-  },
-  {
-    id: "3",
-    acno: "0",
-    product_name: "Portable Bluetooth Speaker",
-    price: "150",
-    sale_price: "0",
-    image: "https://placehold.co/600x600/F6F6F6/474747/png?text=Speaker",
-    on_sale: "N" as const,
-    sku_code: "SKU003",
-    business_name: "BoomBeat",
-    inventory_policy: "deny",
-    product_weight: "1.0",
-    type: "simple",
-  },
-  {
-    id: "4",
-    acno: "0",
-    product_name: "Ultra HD 4K Action Camera",
-    price: "200",
-    sale_price: "0",
-    image: "https://placehold.co/600x600/F6F6F6/474747/png?text=Camera",
-    on_sale: "N" as const,
-    sku_code: "SKU004",
-    business_name: "CaptureX",
-    inventory_policy: "deny",
-    product_weight: "0.3",
-    type: "simple",
-  },
-  {
-    id: "5",
-    acno: "0",
-    product_name: "Ergonomic Office Chair",
-    price: "180",
-    sale_price: "0",
-    image: "https://placehold.co/600x600/F6F6F6/474747/png?text=Chair",
-    on_sale: "N" as const,
-    sku_code: "SKU005",
-    business_name: "ComfortZone",
-    inventory_policy: "deny",
-    product_weight: "15.0",
-    type: "simple",
-  },
-  {
-    id: "6",
-    acno: "0",
-    product_name: "Gaming Mechanical Keyboard RGB",
-    price: "90",
-    sale_price: "0",
-    image: "https://placehold.co/600x600/F6F6F6/474747/png?text=Keyboard",
-    on_sale: "N" as const,
-    sku_code: "SKU006",
-    business_name: "KeyStrike",
-    inventory_policy: "deny",
-    product_weight: "1.2",
-    type: "simple",
-  },
-];
-
 const ProductDetailWrapper = ({
   productId,
   acno,
 }: ProductDetailWrapperProps) => {
+  // ========================= Hooks ========================= \\
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category");
+
+  // ========================= Data Fetching ========================= \\
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    isError: categoriesIsError,
+    refetch: categoriesRefetch,
+  } = useCategoryHooks.GetList();
+
+  const categoryId = categories?.payload?.find(
+    (item) => item.name.toLowerCase() === category?.toLowerCase(),
+  )?.id;
+
+  const data: GetProductsListParams = {
+    categoryId: [categoryId!],
+    productId
+  };
+
+  const {
+    data: products,
+    isLoading: productsLoading,
+    isError: productsIsError,
+    refetch: productsRefetch,
+  } = useProductHooks.GetList(data);
+
+  // ========================= Render ========================= \\
+  const isLoading = categoriesLoading || productsLoading;
+  const isError = categoriesIsError || productsIsError;
+  const refetch = () => {
+    categoriesRefetch();
+    productsRefetch();
+  };
+
+  const renderProductCards = () => {
+    if (isLoading)
+      return Array.from({ length: 10 }).map((_, i) => (
+        <LoadingSkeleton.ProductCardSkeleton key={i} />
+      ));
+
+    if (isError)
+      return (
+        <div className="col-span-full py-10">
+          <ErrorState onRetry={() => refetch()} />
+        </div>
+      );
+
+    if (products?.payload?.length === 0) {
+      return (
+        <div className="col-span-full py-10">
+          <ErrorState
+            title="No products found"
+            message="No products found matching your criteria"
+          />
+        </div>
+      );
+    }
+
+    return products?.payload?.map((item) => (
+      <ProductCard key={item.id} {...item} />
+    ));
+  };
+
   return (
     <>
       <section className="container pb-16 pt-[96px]">
@@ -114,9 +100,7 @@ const ProductDetailWrapper = ({
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 sm:gap-8">
-          {products.map((item) => (
-            <ProductCard key={item.id} {...item} />
-          ))}
+          {renderProductCards()}
         </div>
       </section>
     </>

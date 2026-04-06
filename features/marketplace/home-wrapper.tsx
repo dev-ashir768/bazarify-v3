@@ -39,8 +39,6 @@ const HomeWrapper = () => {
     search: search ? search : undefined,
   };
 
-  console.log(data);
-
   const {
     data: products,
     isLoading: productsLoading,
@@ -49,7 +47,7 @@ const HomeWrapper = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useProductHooks.GetList(data);
+  } = useProductHooks.GetInfiniteList(data);
 
   const observerTarget = useRef<HTMLDivElement>(null);
 

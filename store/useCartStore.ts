@@ -5,8 +5,8 @@ import { createJSONStorage, persist } from "zustand/middleware";
 interface CartState {
   items: CartItems[];
   addItem: (item: CartItems) => void;
-  updateQuantity: (order_ref: string, change: number) => void;
-  removeItem: (order_ref: string) => void;
+  updateQuantity: (item_ref: string, change: number) => void;
+  removeItem: (item_ref: string) => void;
   clearCart: () => void;
   totalItems: () => number;
 }
@@ -18,7 +18,7 @@ export const useCartStore = create<CartState>()(
       addItem: (item) => {
         set((prev) => {
           const existingItemIndex = prev.items.findIndex(
-            (i) => i.order_ref === item.order_ref,
+            (i) => i.item_ref === item.item_ref,
           );
 
           if (existingItemIndex > -1) {
@@ -31,11 +31,11 @@ export const useCartStore = create<CartState>()(
           return { items: [...prev.items, item] };
         });
       },
-      updateQuantity: (order_ref, change) => {
+      updateQuantity: (item_ref, change) => {
         set((prev) => ({
           items: prev.items
             .map((item) => {
-              if (item.order_ref === order_ref) {
+              if (item.item_ref === item_ref) {
                 const newQuantity = item.line_items.quantity + change;
                 if (newQuantity <= 0) return null;
                 return {
@@ -48,9 +48,9 @@ export const useCartStore = create<CartState>()(
             .filter(Boolean) as CartItems[],
         }));
       },
-      removeItem: (order_ref) => {
+      removeItem: (item_ref) => {
         set((prev) => ({
-          items: prev.items.filter((i) => i.order_ref !== order_ref),
+          items: prev.items.filter((i) => i.item_ref !== item_ref),
         }));
       },
       clearCart: () =>
@@ -58,7 +58,7 @@ export const useCartStore = create<CartState>()(
           items: [],
         }),
       totalItems: () =>
-        get().items?.reduce((acc, item) => acc + item.line_items.quantity, 0)
+        get().items?.reduce((acc, item) => acc + item.line_items.quantity, 0),
     }),
     {
       name: "user-cart",

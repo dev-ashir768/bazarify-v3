@@ -1,14 +1,22 @@
 "use client";
 
-import CartShippingDetails from "./cart-shipping-details";
-import CartOrderSummary from "./cart-order-summary";
+import { useEffect, useState } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PUBLIC_ROUTES } from "@/lib/constants";
+import OrderForm from "./order-form";
 
 const CartWrapper = () => {
+  const [mounted, setMounted] = useState(false);
   const totalItems = useCartStore((state) => state.totalItems());
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   if (totalItems === 0) {
     return (
@@ -33,26 +41,21 @@ const CartWrapper = () => {
 
         <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
         <p className="text-muted-foreground mb-8 max-w-md">
-          Looks like you haven&apos;t added anything to your cart yet. Explore our
-          marketplace to find amazing products!
+          Looks like you haven&apos;t added anything to your cart yet. Explore
+          our marketplace to find amazing products!
         </p>
-        <Button size="xl" className="rounded-2xl px-12" asChild>
-          <Link href={PUBLIC_ROUTES.HOME}>Start Shopping</Link>
-        </Button>
+        <div className="max-w-xs w-full">
+          <Button size="xl" className="rounded-2xl text-base w-full" asChild>
+            <Link href={PUBLIC_ROUTES.HOME}>Start Shopping</Link>
+          </Button>
+        </div>
       </section>
     );
   }
 
   return (
     <section className="container pb-8 pt-[96px] overflow-hidden">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 xl:gap-16">
-        <div className="lg:col-span-5 2xl:col-span-6">
-          <CartShippingDetails />
-        </div>
-        <div className="lg:col-span-7 2xl:col-span-6">
-          <CartOrderSummary />
-        </div>
-      </div>
+      <OrderForm />
     </section>
   );
 };

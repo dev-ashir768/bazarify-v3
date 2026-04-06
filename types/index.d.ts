@@ -25,11 +25,13 @@ export interface ProductListResponse {
     sku_code: string;
     type: string;
     business_name: string;
+    marketplace_category_id: number[];
   }[];
 }
 
 export interface GetProductsListParams {
   categoryId?: [number];
+  productId?: number;
   maxPrice?: number;
   minPrice?: number;
   limit?: number;
@@ -58,6 +60,7 @@ export interface ProductVariation {
   inventory: ProductInventory[];
   combination: Record<string, string>;
 }
+
 export interface ProductDetailResponse {
   status: 1 | 0;
   message: string;
@@ -97,9 +100,7 @@ export interface GetProductDetailParams {
 export interface CartItems {
   acno: string;
   line_items: LineItems & { product_image: string };
-  order_ref: string;
-  platform_id: number;
-  payment_method_id: number;
+  item_ref: string;
   product_name: string;
   price: string;
 }
@@ -112,3 +113,69 @@ export interface LineItems {
 }
 
 export type SelectedAttributes = Record<string, string>;
+
+// ========================= City List ========================= \\
+export type CityListResponse = {
+  id: string;
+  city_name: string;
+  country_id: string;
+  province_id: string;
+  created_at: string;
+  updated_at: string | null;
+}[];
+
+export type SelectOptionType = { value: string | number; label: string };
+
+// ========================= Create Order ========================= \\
+export type CreateOrderResponse = {
+  status: 1 | 0;
+  message: string;
+  payload: {
+    status: string;
+    message: string;
+    payload: {
+      request: {
+        consignee_name: string;
+        consignee_address: string;
+        consignee_email: string;
+        consignee_contact: string;
+        destination_city_id: number;
+        order_ref: string;
+        platform_id: number;
+        payment_method_id: number;
+        remarks: string;
+        shipping_charges: number;
+        line_items: {
+          product_id: number;
+          variation_id: number;
+          location_id: number;
+          quantity: number;
+        }[];
+        customer_platform_id: number;
+        is_marketplace_order: string;
+      };
+    };
+  }[];
+};
+
+export interface CreateOrderRequest {
+  acno: string;
+  orders: {
+    consignee_name: string;
+    consignee_address: string;
+    consignee_email: string;
+    consignee_contact: string;
+    destination_city_id: number;
+    order_ref: string;
+    platform_id: number;
+    payment_method_id: number;
+    remarks: string;
+    shipping_charges: number;
+    line_items: {
+      product_id: number;
+      variation_id: number;
+      location_id: number;
+      quantity: number;
+    }[];
+  }[];
+}

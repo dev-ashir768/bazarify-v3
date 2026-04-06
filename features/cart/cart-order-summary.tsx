@@ -1,13 +1,29 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import CartItem from "./cart-item";
 import { useCartStore } from "@/store/useCartStore";
+import { UseFormReset } from "react-hook-form";
+import { OrderFormValues } from "@/schema/order.schema";
+import { orderRefGenerate } from "@/lib/order-ref-generate";
 
-const CartOrderSummary = () => {
+const CartOrderSummary = ({
+  reset,
+  isPending,
+}: {
+  reset: UseFormReset<OrderFormValues>;
+  isPending: boolean;
+}) => {
+  // ========================= Hooks ========================= \\
   const { items } = useCartStore();
+  const [orderRef, setOrderRef] = useState("");
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOrderRef(orderRefGenerate());
+  }, []);
 
   const subTotal = useMemo(() => {
     return items.reduce((acc, item) => {
@@ -16,16 +32,51 @@ const CartOrderSummary = () => {
     }, 0);
   }, [items]);
 
+  // ========================= Calculation ========================= \\
   const shipping = 0;
-  const tax = subTotal * 0.05;
+  const tax = subTotal * 0;
   const total = subTotal + shipping + tax;
+  const paymentMethodId = 1;
+  const platformId = 1;
+
+  const lineItems = useMemo(() => {
+    return items.map((item) => ({
+      product_id: item.line_items.product_id,
+      variation_id: item.line_items.variation_id,
+      location_id: item.line_items.location_id,
+      quantity: item.line_items.quantity,
+    }));
+  }, [items]);
+
+  const acno = items[0]?.acno || "";
+
+  useEffect(() => {
+    if (!orderRef) return;
+
+    reset({
+      acno: acno,
+      order_ref: orderRef,
+      shipping_charges: shipping,
+      payment_method_id: paymentMethodId,
+      platform_id: platformId,
+      line_items: lineItems,
+    });
+  }, [
+    reset,
+    shipping,
+    paymentMethodId,
+    platformId,
+    orderRef,
+    lineItems,
+    acno,
+  ]);
 
   return (
     <div className="w-full bg-card rounded-4xl px-5 sm:px-7 py-5 sm:py-6">
       <h2 className="text-xl font-semibold mb-4 sm:mb-6">Your Order</h2>
       <div className="mb-6 sm:mb-8 flex flex-col gap-4">
         {items.map((item) => (
-          <CartItem key={item.order_ref} item={item} />
+          <CartItem key={item.item_ref} item={item} />
         ))}
       </div>
 
@@ -46,7 +97,7 @@ const CartOrderSummary = () => {
             </span>
           </div>
           <div>
-            <span>Tax (Estimated 5%)</span>
+            <span>Tax</span>
             <span className="font-semibold text-foreground">
               Rs. {tax.toLocaleString()}
             </span>
@@ -59,7 +110,6 @@ const CartOrderSummary = () => {
             Rs. {total.toLocaleString()}
           </span>
         </div>
-
 
         <div>
           <h3 className="font-semibold text-base text-foreground mb-3">
@@ -82,8 +132,14 @@ const CartOrderSummary = () => {
           </RadioGroup>
         </div>
 
-        <Button size="xl" className="w-full rounded-2xl text-lg">
-          Proceed to Checkout
+        <Button
+          type="submit"
+          form="order-form"
+          size="xl"
+          className="w-full rounded-2xl text-lg"
+          disabled={isPending}
+        >
+          {isPending ? "Processing..." : "Proceed to Checkout"}
         </Button>
       </div>
     </div>

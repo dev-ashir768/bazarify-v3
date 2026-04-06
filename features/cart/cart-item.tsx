@@ -39,7 +39,7 @@ const CartItem = ({ item }: { item: CartItems }) => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => updateQuantity(item.order_ref, -1)}
+            onClick={() => updateQuantity(item.item_ref, -1)}
             className="p-1 rounded-full bg-card hover:bg-card text-foreground hover:text-foreground"
           >
             <svg
@@ -63,7 +63,7 @@ const CartItem = ({ item }: { item: CartItems }) => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => updateQuantity(item.order_ref, 1)}
+            onClick={() => updateQuantity(item.item_ref, 1)}
             className="p-1 rounded-full bg-card hover:bg-card text-foreground hover:text-foreground"
           >
             <svg
@@ -93,7 +93,7 @@ const CartItem = ({ item }: { item: CartItems }) => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => removeItem(item.order_ref)}
+            onClick={() => removeItem(item.item_ref)}
             className="p-0 bg-transparent hover:bg-transparent text-red-500 hover:text-red-500 [&_svg:not([class*='size-'])]:size-5.5"
           >
             <svg

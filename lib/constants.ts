@@ -19,10 +19,22 @@ export const API_ENDPOINTS = {
   CATEGORIES: "/marketplace/category",
   PRODUCTS: "/marketplace/getproducts",
   PRODUCT_DETAIL: "/marketplace/productdetail",
+  CITIES: "/cities",
+  CREATE_ORDER: "/marketplace/create_order",
 } as const;
 
 export const QUERY_KEYS = {
   CATEGORIES_LISTING: "categories-listing",
   PRODUCTS_LISTING: "products-listing",
+  RELATED_PRODUCTS_LISTING: "related-products-listing",
   PRODUCT_DETAIL: "product-detail",
+  CITY_LISTING: "city-listing",
+} as const;
+
+export const DEFAULT_PAYLOADS = {
+  CITIES: {
+    acno: "OR-00009",
+    user_id: 38,
+    country_id: 1,
+  },
 } as const;

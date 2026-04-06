@@ -6,10 +6,11 @@ import { ProductServices } from "@/services/product.services";
 import { GetProductDetailParams, GetProductsListParams } from "@/types";
 
 export const useProductHooks = {
-  GetList: (data: GetProductsListParams) => {
+  GetInfiniteList: (data: GetProductsListParams) => {
     return useInfiniteQuery({
       queryKey: [
         QUERY_KEYS.PRODUCTS_LISTING,
+        ...(data.productId ? [data.productId] : []),
         ...(data.categoryId ? [data.categoryId] : []),
         ...(data.maxPrice ? [data.maxPrice] : []),
         ...(data.minPrice ? [data.minPrice] : []),
@@ -27,6 +28,17 @@ export const useProductHooks = {
         if (payload.length < 20) return undefined;
         return allPages.length * 20;
       },
+    });
+  },
+  GetList: (data: GetProductsListParams) => {
+    return useQuery({
+      queryKey: [
+        QUERY_KEYS.RELATED_PRODUCTS_LISTING,
+        ...(data.productId ? [data.productId] : []),
+        ...(data.categoryId ? [data.categoryId] : []),
+      ],
+      queryFn: () =>
+        ProductServices.getProductsByCategory({ limit: 10, offset: 0, ...data }),
     });
   },
   GetDetail: (data: GetProductDetailParams) => {

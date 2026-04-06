@@ -1,7 +1,10 @@
+"use client";
+
+import { useCategoryHooks } from "@/hooks/useCategoryHooks";
 import { PUBLIC_ROUTES } from "@/lib/constants";
 import ImageFallback from "@/lib/image-fallback";
 import { ProductListResponse } from "@/types";
-import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const ProductCard = ({
   id,
@@ -13,22 +16,40 @@ const ProductCard = ({
   on_sale,
   sku_code,
   business_name,
+  marketplace_category_id,
 }: ProductListResponse["payload"][0]) => {
+  // ========================= Hooks ========================= \\
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // ========================= Data Fetching ========================= \\
+  const { data: categories } = useCategoryHooks.GetList();
+
+  const categoryNames = marketplace_category_id.map(
+    (id) => categories?.payload?.find((item) => item.id === id)?.name,
+  );
+
+  // ========================= Handler ========================= \\
+  const handleProductClick = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("category", categoryNames?.toString().toLowerCase() || "");
+    router.push(
+      `${PUBLIC_ROUTES.PRODUCTS.replaceAll(":id", id).replaceAll(":acno", acno)}?${params.toString()}`,
+    );
+  };
+
   return (
     <>
-      <div className="flex flex-col gap-3">
-        <Link
-          href={PUBLIC_ROUTES.PRODUCTS.replaceAll(":id", id).replaceAll(
-            ":acno",
-            acno,
-          )}
-          className="relative w-full aspect-square bg-card rounded-2xl overflow-hidden"
-        >
+      <div
+        className="flex flex-col gap-3 cursor-pointer"
+        onClick={handleProductClick}
+      >
+        <div className="relative w-full aspect-square bg-card rounded-2xl overflow-hidden">
           <ImageFallback
             key={sku_code}
             alt={image}
             fill
-              className="object-contain transition-transform duration-300 ease-in-out hover:scale-105"
+            className="object-contain transition-transform duration-300 ease-in-out hover:scale-105"
             src={
               image?.startsWith("http")
                 ? image
@@ -44,14 +65,11 @@ const ProductCard = ({
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             loading="eager"
           />
-        </Link>
+        </div>
         <div className="px-2">
-          <Link
-            href={`/products/${id}`}
-            className="text-sm text-muted-foreground mb-1 capitalize line-clamp-2"
-          >
+          <div className="text-sm text-muted-foreground mb-1 capitalize line-clamp-2">
             {product_name}
-          </Link>
+          </div>
           <p className="text-base text-muted-foreground mb-1 capitalize line-clamp-2">
             {business_name}
           </p>
