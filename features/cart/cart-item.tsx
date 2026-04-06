@@ -39,6 +39,7 @@ const CartItem = ({ item }: { item: CartItems }) => {
           <Button
             variant="ghost"
             size="icon"
+            type="button"
             onClick={() => updateQuantity(item.item_ref, -1)}
             className="p-1 rounded-full bg-card hover:bg-card text-foreground hover:text-foreground"
           >
@@ -63,6 +64,7 @@ const CartItem = ({ item }: { item: CartItems }) => {
           <Button
             variant="ghost"
             size="icon"
+            type="button"
             onClick={() => updateQuantity(item.item_ref, 1)}
             className="p-1 rounded-full bg-card hover:bg-card text-foreground hover:text-foreground"
           >
