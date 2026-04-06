@@ -37,7 +37,7 @@ const CartOrderSummary = ({
   const tax = subTotal * 0;
   const total = subTotal + shipping + tax;
   const paymentMethodId = 1;
-  const platformId = 1;
+  const platformId = 5;
 
   const lineItems = useMemo(() => {
     return items.map((item) => ({
