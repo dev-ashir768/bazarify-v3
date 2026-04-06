@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image, { ImageProps } from "next/image";
 
 interface ImageFallbackProps extends ImageProps {
@@ -10,6 +10,11 @@ interface ImageFallbackProps extends ImageProps {
 const ImageFallback = (props: ImageFallbackProps) => {
   const { src, fallbackSrc, alt, ...rest } = props;
   const [imgSrc, setImgSrc] = useState(src || fallbackSrc);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setImgSrc(src || fallbackSrc);
+  }, [src, fallbackSrc]);
 
   return (
     <Image
