@@ -331,7 +331,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                   >
                     <ImageFallback
                       src={resolvedImage}
-                      alt={`Thumbnail ${0 + 1}`}
+                      alt={resolvedImage}
                       fill
                       className="object-cover"
                       fallbackSrc="https://placehold.co/100x100/F6F6F6/474747/png?text=Not+Found"
@@ -354,7 +354,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                     <Lens hovering={hovering} setHovering={setHovering}>
                       <ImageFallback
                         src={resolvedImage}
-                        alt={productDetail?.payload.product_name ?? ""}
+                        alt={resolvedImage}
                         fill
                         className="object-contain"
                         fallbackSrc="https://placehold.co/600x600/F6F6F6/474747/png?text=Not+Found"
