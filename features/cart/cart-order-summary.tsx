@@ -18,12 +18,7 @@ const CartOrderSummary = ({
 }) => {
   // ========================= Hooks ========================= \\
   const { items } = useCartStore();
-  const [orderRef, setOrderRef] = useState("");
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setOrderRef(orderRefGenerate());
-  }, []);
+  const [orderRef] = useState(() => orderRefGenerate());
 
   const subTotal = useMemo(() => {
     return items.reduce((acc, item) => {
@@ -51,8 +46,6 @@ const CartOrderSummary = ({
   const acno = items[0]?.acno || "";
 
   useEffect(() => {
-    if (!orderRef) return;
-
     reset({
       acno: acno,
       order_ref: orderRef,
@@ -61,15 +54,7 @@ const CartOrderSummary = ({
       platform_id: platformId,
       line_items: lineItems,
     });
-  }, [
-    reset,
-    shipping,
-    paymentMethodId,
-    platformId,
-    orderRef,
-    lineItems,
-    acno,
-  ]);
+  }, [reset, shipping, paymentMethodId, platformId, orderRef, lineItems, acno]);
 
   return (
     <div className="w-full bg-card rounded-4xl px-5 sm:px-7 py-5 sm:py-6">

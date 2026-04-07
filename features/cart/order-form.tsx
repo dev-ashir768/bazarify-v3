@@ -23,7 +23,7 @@ const OrderForm = () => {
       consignee_name: "",
       consignee_email: "",
       consignee_contact: "",
-      destination_city_id: "",
+      destination_city_id: undefined,
       consignee_address: "",
       order_ref: "",
       payment_method_id: undefined,

@@ -62,6 +62,18 @@ const CategoryFilters = ({ minBound, maxBound }: CategoryFiltersProps) => {
   return (
     <div className="w-full overflow-hidden">
       <div className="container flex items-center justify-start sm:justify-center gap-3 sm:gap-6 overflow-x-auto no-scrollbar pb-2 sm:pb-0 flex-nowrap sm:flex-wrap">
+        <Button
+          size="pill"
+          variant="filter"
+          className={cn(
+            "2xl:mb-2",
+            (activeCategory === "all" || !activeCategory) &&
+              "bg-primary text-primary-foreground hover:bg-primary/80",
+          )}
+          onClick={() => handleFilter("all")}
+        >
+          All
+        </Button>
         {categories?.payload?.map((category) => {
           const isSelected = activeCategory === category.name.toLowerCase();
 

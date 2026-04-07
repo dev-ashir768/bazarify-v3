@@ -58,7 +58,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
   const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
-  const { addItem, totalItems, items } = useCartStore();
+  const { addItem, items } = useCartStore();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -251,7 +251,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
       acno,
       maxInventoryItem?.location_id,
       productId,
-      items
+      items,
     ],
   );
 
@@ -262,17 +262,13 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
         return;
       }
 
-      if (totalItems() === 0) {
-        handleAddToCart(e);
+      handleAddToCart(e);
 
-        setTimeout(() => {
-          router.push(PUBLIC_ROUTES.CART);
-        }, 800);
-      } else {
+      setTimeout(() => {
         router.push(PUBLIC_ROUTES.CART);
-      }
+      }, 800);
     },
-    [handleAddToCart, router, totalItems, acno, items],
+    [handleAddToCart, router, acno, items],
   );
 
   // ========================= Render ========================= \\
@@ -497,7 +493,6 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
               onClick={handleBuyNow}
               disabled={isOutOfStock || (hasVariations && !activeVariation)}
             >
-              {/* <Link href={PUBLIC_ROUTES.CART}>Buy Now</Link> */}
               Buy Now
             </Button>
           </div>

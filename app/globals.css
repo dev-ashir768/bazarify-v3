@@ -149,4 +149,9 @@
     animation: autofill-fix 1s forwards;
     transition: background-color 5000s ease-in-out 0s;
   }
+
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
 }

@@ -1,19 +1,25 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { useCartStore } from "@/store/useCartStore";
+import { LoadingSkeleton } from "../shared/loading-skeleton";
+import { useSyncExternalStore } from "react";
 
 const Navbar = () => {
-  const [mounted, setMounted] = useState(false);
+  const useIsMounted = () =>
+    useSyncExternalStore(
+      () => () => {},
+      () => true,
+      () => false,
+    );
+  const isMounted = useIsMounted();
   const totalItems = useCartStore((state) => state.totalItems());
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
+  if (!isMounted) {
+    return <LoadingSkeleton.NavbarSkeleton />;
+  }
 
   return (
     <>
@@ -22,7 +28,7 @@ const Navbar = () => {
           <Image
             src="/images/logo.svg"
             alt="Logo"
-            width={150}
+            width={130}
             height={90}
             loading="eager"
             priority
@@ -52,11 +58,9 @@ const Navbar = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
-                {mounted && (
-                  <span className="absolute -top-1.5 -right-2 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white border-2 border-background">
-                    {totalItems}
-                  </span>
-                )}
+                <span className="absolute -top-1.5 -right-2 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white border-2 border-background">
+                  {totalItems}
+                </span>
               </span>
               My Cart
             </Link>
@@ -68,4 +72,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

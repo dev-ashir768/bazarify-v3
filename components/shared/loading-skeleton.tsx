@@ -26,4 +26,11 @@ export const LoadingSkeleton = {
       </div>
     </div>
   ),
+
+  NavbarSkeleton: () => (
+    <div className="container absolute top-0 left-0 right-0 w-full z-50 flex items-center justify-between py-4 h-[65px]">
+      <Skeleton className="w-[130px] h-[37px]" />
+      <Skeleton className="w-[113px] h-[32px]" />
+    </div>
+  ),
 };

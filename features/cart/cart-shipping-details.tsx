@@ -87,12 +87,10 @@ const CartShippingDetails = ({
                 {...field}
                 label="City"
                 options={cityOptions || []}
-                value={cityOptions?.find(
-                  (val) => val.value === String(field.value),
-                )}
+                value={cityOptions?.find((val) => Number(val.value) === field.value)}
                 onChange={(val) => {
                   const opt = val as SelectOptionType;
-                  field.onChange(opt?.value ?? null);
+                  field.onChange(opt?.value ? Number(opt.value) : null);
                 }}
                 isLoading={isLoading}
                 isSearchable

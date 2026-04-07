@@ -5,7 +5,9 @@ export const orderSchema = z.object({
   consignee_name: z.string().min(1, "Name is required"),
   consignee_email: z.string().min(1, "Email is required"),
   consignee_contact: z.string().min(1, "Contact is required"),
-  destination_city_id: z.string({ message: "City is required" }),
+  destination_city_id: z.number({
+    invalid_type_error: "City is required",
+  }),
   consignee_address: z.string().min(1, "Address is required"),
   order_ref: z.string().min(1, "Order reference is required"),
   platform_id: z.number({ invalid_type_error: "Platform is required" }),
