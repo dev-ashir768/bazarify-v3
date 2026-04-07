@@ -60,7 +60,7 @@ const ProductCard = ({
                   image
             }
             fallbackSrc={
-              "https://placehold.co/251x251/F6F6F6/474747/png?text=Not+Found"
+              "/images/product-placeholder.jpeg"
             }
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             loading="eager"

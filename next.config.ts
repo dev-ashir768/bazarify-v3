@@ -11,11 +11,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "placehold.co",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
         hostname: "oms.getorio.com",
         pathname: "/**",
       },

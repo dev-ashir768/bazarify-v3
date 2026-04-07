@@ -330,7 +330,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                       alt={resolvedImage}
                       fill
                       className="object-cover"
-                      fallbackSrc="https://placehold.co/100x100/F6F6F6/474747/png?text=Not+Found"
+                      fallbackSrc="/images/product-placeholder.jpeg"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                   </button>
@@ -353,7 +353,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                         alt={resolvedImage}
                         fill
                         className="object-contain"
-                        fallbackSrc="https://placehold.co/600x600/F6F6F6/474747/png?text=Not+Found"
+                        fallbackSrc="/images/product-placeholder.jpeg"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       />
                     </Lens>
