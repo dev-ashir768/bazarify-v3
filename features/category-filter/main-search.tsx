@@ -4,16 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SearchFormValues } from "@/schema/search.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { searchSchema } from "@/schema/search.schema";
-import { useCallback, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { toast } from "sonner";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useDebounce } from "use-debounce";
 
 const MainSearch = () => {
   // ========================= Hooks ========================= \\
@@ -21,51 +21,51 @@ const MainSearch = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<SearchFormValues>({
+  const currentSearchInUrl = searchParams.get("search") || "";
+
+  const { register, setValue, control } = useForm<SearchFormValues>({
     resolver: zodResolver(searchSchema),
-    mode: "onChange",
     defaultValues: {
-      search: searchParams.get("search") || "",
+      search: currentSearchInUrl,
     },
   });
 
+  const searchTerm = useWatch({
+    control,
+    name: "search",
+  });
+  const [debouncedSearch] = useDebounce(searchTerm, 500);
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
-    reset({
-      search: searchParams.get("search") || "",
-    });
-  }, [searchParams, reset]);
-
-  // ========================= Handler ========================= \\
-  const submitHandler = useCallback(
-    (data: SearchFormValues) => {
-      const params = new URLSearchParams(searchParams.toString());
-
-      if (data.search && data.search.trim() !== "") {
-        params.set("search", data.search);
-      } else {
-        params.delete("search");
-      }
-
-      router.push(`${pathname}?${params.toString()}`);
-    },
-    [searchParams, router, pathname],
-  );
-
-  const errorHandler = useCallback(() => {
-    if (errors.search?.message) {
-      toast.error(errors.search.message);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      if (!debouncedSearch) return;
     }
-  }, [errors.search]);
+
+    if (debouncedSearch === currentSearchInUrl) return;
+
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (debouncedSearch && debouncedSearch.trim() !== "") {
+      params.set("search", debouncedSearch);
+    } else {
+      params.delete("search");
+    }
+
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [currentSearchInUrl, searchParams, debouncedSearch, pathname, router]);
+
+  useEffect(() => {
+    if (currentSearchInUrl !== searchTerm) {
+      setValue("search", currentSearchInUrl);
+    }
+  }, [currentSearchInUrl, setValue, searchTerm]);
 
   return (
     <>
       <form
-        onSubmit={handleSubmit(submitHandler, errorHandler)}
+        onSubmit={(e) => e.preventDefault()}
         id="search-form"
         className="w-[90%] md:w-[60%] h-16 mx-auto bg-background flex justify-center items-center py-3 pl-8 pr-3 rounded-full mb-1"
         style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}
