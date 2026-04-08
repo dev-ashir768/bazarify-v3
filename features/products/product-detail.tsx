@@ -262,13 +262,18 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
         return;
       }
 
+      if (items.map((item) => item.item_ref).includes(itemRef)) {
+        router.push(PUBLIC_ROUTES.CART);
+        return;
+      }
+
       handleAddToCart(e);
 
       setTimeout(() => {
         router.push(PUBLIC_ROUTES.CART);
       }, 800);
     },
-    [handleAddToCart, router, acno, items],
+    [handleAddToCart, router, acno, items, itemRef],
   );
 
   // ========================= Render ========================= \\
@@ -291,7 +296,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage className="font-medium truncate md:max-w-full max-w-[200px]">
+            <BreadcrumbPage className="font-medium truncate md:max-w-full max-w-50">
               {productDetail?.payload.product_name}
             </BreadcrumbPage>
           </BreadcrumbItem>
@@ -299,7 +304,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
       </Breadcrumb>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-        <div className="lg:col-span-7 xl:col-span-6 xl:max-w-[650px] w-full flex flex-col sm:flex-row gap-4 sm:gap-6">
+        <div className="lg:col-span-7 xl:col-span-6 xl:max-w-162.5 w-full flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="order-2 sm:order-1 shrink-0 sm:w-24">
             <Carousel
               setApi={setThumbApi}
@@ -332,6 +337,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                       className="object-cover"
                       fallbackSrc="/images/product-placeholder.jpeg"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      loading="eager"
                     />
                   </button>
                 </CarouselItem>
@@ -339,7 +345,10 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
             </Carousel>
           </div>
 
-          <div className="order-1 sm:order-2 flex-1 relative bg-card rounded-3xl overflow-hidden aspect-square sm:aspect-auto h-[361px] lg:h-[427px]">
+          <div
+            className="order-1 sm:order-2 flex-1 relative bg-card rounded-3xl overflow-hidden aspect-square sm:aspect-auto 
+            h-90.25 lg:h-106.75"
+          >
             <Carousel
               setApi={setMainApi}
               className="w-full h-full [&>.overflow-hidden]:w-full [&>.overflow-hidden]:h-full cursor-zoom-in"
@@ -355,6 +364,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                         className="object-contain"
                         fallbackSrc="/images/product-placeholder.jpeg"
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading="eager"
                       />
                     </Lens>
                   </div>
@@ -364,7 +374,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
           </div>
         </div>
 
-        <div className="lg:col-span-5 xl:col-span-6 xl:max-w-[500px] w-full">
+        <div className="lg:col-span-5 xl:col-span-6 xl:max-w-125 w-full">
           <div className="mb-4">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-4">
               {payload?.product_name}
@@ -477,7 +487,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
               </div>
             )}
 
-          <div className="space-y-4 sm:max-w-[400px] mb-4">
+          <div className="space-y-4 sm:max-w-100 mb-4">
             <Button
               variant="secondary"
               size="xl"

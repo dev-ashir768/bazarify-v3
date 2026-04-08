@@ -7,12 +7,14 @@ export const orderSchema = z.object({
   consignee_contact: z.string().min(1, "Contact is required"),
   destination_city_id: z.number({
     invalid_type_error: "City is required",
+    message: "City is required",
   }),
   consignee_address: z.string().min(1, "Address is required"),
   order_ref: z.string().min(1, "Order reference is required"),
   platform_id: z.number({ invalid_type_error: "Platform is required" }),
   payment_method_id: z.number({
     invalid_type_error: "Payment method is required",
+    message: "Payment method is required",
   }),
   remarks: z.string().optional(),
   shipping_charges: z.number().min(0),

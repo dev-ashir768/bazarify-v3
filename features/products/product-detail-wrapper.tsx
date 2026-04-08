@@ -85,7 +85,7 @@ const ProductDetailWrapper = ({
 
   return (
     <>
-      <section className="container pb-16 pt-[96px]">
+      <section className="container pb-16 pt-24">
         <ProductDetail productId={productId} acno={acno} />
       </section>
       <section className="container pb-20">

@@ -20,7 +20,7 @@ const CartWrapper = () => {
 
   if (totalItems === 0) {
     return (
-      <section className="container pb-8 pt-[96px] h-full flex-1 flex flex-col items-center justify-center text-center">
+      <section className="container pb-8 pt-24 h-full flex-1 flex flex-col items-center justify-center text-center">
         <div className="bg-card p-8 rounded-full mb-6">
           <svg
             width="64"
@@ -54,7 +54,7 @@ const CartWrapper = () => {
   }
 
   return (
-    <section className="container pb-8 pt-[96px] overflow-hidden">
+    <section className="container pb-8 pt-24 h-full flex-1 flex flex-col overflow-hidden">
       <OrderForm />
     </section>
   );
