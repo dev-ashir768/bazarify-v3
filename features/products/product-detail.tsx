@@ -139,6 +139,8 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     );
   }, [activeVariation, payload]);
 
+  console.log("Max Quantity:", maxQuantity);
+
   const maxInventoryItem = useMemo(() => {
     if (activeVariation) {
       return ProductDetailsHelper.getMaxInventoryItem(
@@ -205,6 +207,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
         },
         product_name: payload?.product_name ?? "",
         price: resolvedPrice!,
+        max_quantity: maxQuantity,
       };
 
       if (items.length > 0 && items[0].acno !== acno) {
@@ -252,6 +255,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
       maxInventoryItem?.location_id,
       productId,
       items,
+      maxQuantity,
     ],
   );
 

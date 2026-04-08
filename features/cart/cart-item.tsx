@@ -5,7 +5,6 @@ import Image from "next/image";
 
 const CartItem = ({ item }: { item: CartItems }) => {
   const { removeItem, updateQuantity } = useCartStore();
-
   return (
     <>
       <div
@@ -66,6 +65,7 @@ const CartItem = ({ item }: { item: CartItems }) => {
             size="icon"
             type="button"
             onClick={() => updateQuantity(item.item_ref, 1)}
+            disabled={item.max_quantity === item.line_items.quantity}
             className="p-1 rounded-full bg-card hover:bg-card text-foreground hover:text-foreground"
           >
             <svg

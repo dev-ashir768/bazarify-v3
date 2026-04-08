@@ -103,6 +103,7 @@ export interface CartItems {
   item_ref: string;
   product_name: string;
   price: string;
+  max_quantity: number;
 }
 
 export interface LineItems {
