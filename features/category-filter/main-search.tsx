@@ -56,12 +56,6 @@ const MainSearch = () => {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [currentSearchInUrl, searchParams, debouncedSearch, pathname, router]);
 
-  useEffect(() => {
-    if (currentSearchInUrl !== searchTerm) {
-      setValue("search", currentSearchInUrl);
-    }
-  }, [currentSearchInUrl, setValue, searchTerm]);
-
   return (
     <>
       <form
