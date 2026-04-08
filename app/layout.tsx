@@ -28,7 +28,7 @@ export default function RootLayout({
       className={cn("h-full", "antialiased", sora.variable)}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col justify-between">
+      <body className="min-h-full flex flex-col">
         <Providers>
           <NextTopLoader color="var(--primary)" showSpinner={false} />
           <Navbar />
