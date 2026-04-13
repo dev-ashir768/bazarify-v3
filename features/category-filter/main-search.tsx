@@ -23,7 +23,7 @@ const MainSearch = () => {
 
   const currentSearchInUrl = searchParams.get("search") || "";
 
-  const { register, setValue, control } = useForm<SearchFormValues>({
+  const { register, control } = useForm<SearchFormValues>({
     resolver: zodResolver(searchSchema),
     defaultValues: {
       search: currentSearchInUrl,
