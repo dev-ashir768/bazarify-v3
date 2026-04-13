@@ -58,7 +58,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
   const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
-  const { addItem, items } = useCartStore();
+  const { addItem, items, buyNow } = useCartStore();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -259,25 +259,66 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     ],
   );
 
+  // const handleBuyNow = useCallback(
+  //   (e: React.MouseEvent<HTMLButtonElement>) => {
+  //     if (items.length > 0 && items[0].acno !== acno) {
+  //       toast.error("You can only add items from one store at a time.");
+  //       return;
+  //     }
+
+  //     if (items.map((item) => item.item_ref).includes(itemRef)) {
+  //       router.push(PUBLIC_ROUTES.CART);
+  //       return;
+  //     }
+
+  //     handleAddToCart(e);
+
+  //     setTimeout(() => {
+  //       router.push(PUBLIC_ROUTES.CART);
+  //     }, 800);
+  //   },
+  //   [handleAddToCart, router, acno, items, itemRef],
+  // );
   const handleBuyNow = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (items.length > 0 && items[0].acno !== acno) {
-        toast.error("You can only add items from one store at a time.");
-        return;
-      }
+      const data: CartItems = {
+        acno: acno,
+        item_ref: itemRef,
+        line_items: {
+          product_id: Number(productId),
+          variation_id: Number(activeVariation?.variation_id ?? 0),
+          location_id: Number(maxInventoryItem?.location_id ?? 0),
+          quantity: quantity,
+          product_image: resolvedImage,
+        },
+        product_name: payload?.product_name ?? "",
+        price: resolvedPrice!,
+        max_quantity: maxQuantity,
+      };
 
       if (items.map((item) => item.item_ref).includes(itemRef)) {
         router.push(PUBLIC_ROUTES.CART);
         return;
       }
 
-      handleAddToCart(e);
-
-      setTimeout(() => {
-        router.push(PUBLIC_ROUTES.CART);
-      }, 800);
+      buyNow(data);
+      router.push(PUBLIC_ROUTES.CART);
     },
-    [handleAddToCart, router, acno, items, itemRef],
+    [
+      activeVariation,
+      quantity,
+      resolvedImage,
+      resolvedPrice,
+      payload?.product_name,
+      itemRef,
+      buyNow,
+      acno,
+      maxInventoryItem?.location_id,
+      productId,
+      items,
+      maxQuantity,
+      router,
+    ],
   );
 
   // ========================= Render ========================= \\
@@ -492,7 +533,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
             )}
 
           <div className="space-y-4 sm:max-w-100 mb-4">
-            <Button
+            {/* <Button
               variant="secondary"
               size="xl"
               className="w-full rounded-2xl text-base font-semibold"
@@ -500,7 +541,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
               onClick={handleAddToCart}
             >
               Add to Cart
-            </Button>
+            </Button> */}
             <Button
               size="xl"
               className="w-full rounded-2xl text-base font-semibold"

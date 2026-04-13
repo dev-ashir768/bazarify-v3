@@ -33,7 +33,7 @@ const HomeWrapper = () => {
   )?.id;
 
   const data: GetProductsListParams = {
-    categoryId: categoryId ? [categoryId] : undefined,
+    categoryId: categoryId ? [categoryId || 10] : undefined,
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
     minPrice: minPrice ? Number(minPrice) : undefined,
     search: search ? search : undefined,
@@ -112,7 +112,9 @@ const HomeWrapper = () => {
       );
     }
 
-    return allProducts.map((item) => <ProductCard key={item.id} {...item} />);
+    return allProducts.map((item, index) => (
+      <ProductCard key={index} {...item} />
+    ));
   };
 
   return (

@@ -4,17 +4,20 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 interface CartState {
   items: CartItems[];
+  store_ref: string | null;
   addItem: (item: CartItems) => void;
   updateQuantity: (item_ref: string, change: number) => void;
   removeItem: (item_ref: string) => void;
   clearCart: () => void;
   totalItems: () => number;
+  buyNow: (item: CartItems) => void;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      store_ref: null,
       addItem: (item) => {
         set((prev) => {
           const existingItemIndex = prev.items.findIndex(
@@ -57,6 +60,21 @@ export const useCartStore = create<CartState>()(
         set({
           items: [],
         }),
+      buyNow: (item) => {
+        set((prev) => {
+          if (prev.store_ref && prev.store_ref !== item.acno) {
+            return {
+              items: [item],
+              store_ref: item.acno,
+            };
+          }
+
+          return {
+            items: [item],
+            store_ref: item.acno,
+          };
+        });
+      },
       totalItems: () =>
         get().items?.reduce((acc, item) => acc + item.line_items.quantity, 0),
     }),
