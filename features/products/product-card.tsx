@@ -70,7 +70,7 @@ const ProductCard = ({
           <div className="text-sm text-muted-foreground mb-1 capitalize line-clamp-2">
             {product_name}
           </div>
-          <p className="text-base text-muted-foreground mb-1 capitalize line-clamp-2">
+          <p className="text-base text-muted-foreground mb-1 capitalize line-clamp-2 font-medium">
             {business_name}
           </p>
           {on_sale === "Y" ? (
