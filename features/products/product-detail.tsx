@@ -35,7 +35,6 @@ import { useCartStore } from "@/store/useCartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 interface FlyingItem {
   id: number;
@@ -62,8 +61,8 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   const descriptionRef = React.useRef<HTMLDivElement>(null);
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
-  const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
-  const { addItem, items, buyNow } = useCartStore();
+  const [flyingItems] = useState<FlyingItem[]>([]);
+  const { items, buyNow } = useCartStore();
   const router = useRouter();
 
   React.useEffect(() => {
@@ -217,71 +216,71 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     setQuantity((prev) => Math.max(1, prev - 1));
   }, []);
 
-  const handleAddToCart = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      const data: CartItems = {
-        acno: acno,
-        item_ref: itemRef,
-        line_items: {
-          product_id: Number(productId),
-          variation_id: Number(activeVariation?.variation_id ?? 0),
-          location_id: Number(maxInventoryItem?.location_id ?? 0),
-          quantity: quantity,
-          product_image: resolvedImage,
-        },
-        product_name: payload?.product_name ?? "",
-        price: resolvedPrice!,
-        max_quantity: maxQuantity,
-      };
+  // const handleAddToCart = useCallback(
+  //   (e: React.MouseEvent<HTMLButtonElement>) => {
+  //     const data: CartItems = {
+  //       acno: acno,
+  //       item_ref: itemRef,
+  //       line_items: {
+  //         product_id: Number(productId),
+  //         variation_id: Number(activeVariation?.variation_id ?? 0),
+  //         location_id: Number(maxInventoryItem?.location_id ?? 0),
+  //         quantity: quantity,
+  //         product_image: resolvedImage,
+  //       },
+  //       product_name: payload?.product_name ?? "",
+  //       price: resolvedPrice!,
+  //       max_quantity: maxQuantity,
+  //     };
 
-      if (items.length > 0 && items[0].acno !== acno) {
-        toast.error("You can only add items from one store at a time.");
-        return;
-      }
+  //     if (items.length > 0 && items[0].acno !== acno) {
+  //       toast.error("You can only add items from one store at a time.");
+  //       return;
+  //     }
 
-      // Get positions for animation
-      const buttonRect = e.currentTarget.getBoundingClientRect();
-      const cartIcon = document.getElementById("cart-icon");
-      const cartRect = cartIcon?.getBoundingClientRect();
+  //     // Get positions for animation
+  //     const buttonRect = e.currentTarget.getBoundingClientRect();
+  //     const cartIcon = document.getElementById("cart-icon");
+  //     const cartRect = cartIcon?.getBoundingClientRect();
 
-      if (cartRect) {
-        const newItem: FlyingItem = {
-          id: Date.now(),
-          x: buttonRect.left + buttonRect.width / 2,
-          y: buttonRect.top + buttonRect.height / 2,
-          targetX: cartRect.left + cartRect.width / 2,
-          targetY: cartRect.top + cartRect.height / 2,
-          image: resolvedImage,
-        };
+  //     if (cartRect) {
+  //       const newItem: FlyingItem = {
+  //         id: Date.now(),
+  //         x: buttonRect.left + buttonRect.width / 2,
+  //         y: buttonRect.top + buttonRect.height / 2,
+  //         targetX: cartRect.left + cartRect.width / 2,
+  //         targetY: cartRect.top + cartRect.height / 2,
+  //         image: resolvedImage,
+  //       };
 
-        setFlyingItems((prev) => [...prev, newItem]);
+  //       setFlyingItems((prev) => [...prev, newItem]);
 
-        // Clean up the animated item after it completes
-        setTimeout(() => {
-          setFlyingItems((prev) =>
-            prev.filter((item) => item.id !== newItem.id),
-          );
-          addItem(data);
-        }, 800);
-      } else {
-        addItem(data);
-      }
-    },
-    [
-      activeVariation,
-      quantity,
-      resolvedImage,
-      resolvedPrice,
-      payload?.product_name,
-      itemRef,
-      addItem,
-      acno,
-      maxInventoryItem?.location_id,
-      productId,
-      items,
-      maxQuantity,
-    ],
-  );
+  //       // Clean up the animated item after it completes
+  //       setTimeout(() => {
+  //         setFlyingItems((prev) =>
+  //           prev.filter((item) => item.id !== newItem.id),
+  //         );
+  //         addItem(data);
+  //       }, 800);
+  //     } else {
+  //       addItem(data);
+  //     }
+  //   },
+  //   [
+  //     activeVariation,
+  //     quantity,
+  //     resolvedImage,
+  //     resolvedPrice,
+  //     payload?.product_name,
+  //     itemRef,
+  //     addItem,
+  //     acno,
+  //     maxInventoryItem?.location_id,
+  //     productId,
+  //     items,
+  //     maxQuantity,
+  //   ],
+  // );
 
   // const handleBuyNow = useCallback(
   //   (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -304,7 +303,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   //   [handleAddToCart, router, acno, items, itemRef],
   // );
   const handleBuyNow = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    () => {
       const data: CartItems = {
         acno: acno,
         item_ref: itemRef,
