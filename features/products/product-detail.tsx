@@ -176,6 +176,12 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     );
   }, [payload?.customer_delivery_ratio]);
 
+  const productDeliveryRating = useMemo(() => {
+    return ProductDetailsHelper.getCustomerRating(
+      payload?.product_delivery_ratio,
+    );
+  }, [payload?.product_delivery_ratio]);
+
   const itemRef = useMemo(() => {
     return `${productId}-${activeVariation?.variation_id ?? "default"}`;
   }, [productId, activeVariation]);
@@ -575,48 +581,18 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
             </Button>
           </div>
 
-          {customerDeliveryRating > 0 && (
-            <div className="flex flex-col gap-2 mb-4">
-              <span className="font-semibold text-base">Store Rating:</span>
-              <div className="flex items-center gap-1">
-                {Array.from({ length: 5 }).map((_, i) => {
-                  const starIndex = i + 1;
-                  if (customerDeliveryRating >= starIndex) {
-                    // Full Star
-                    return (
-                      <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    );
-                  } else if (customerDeliveryRating >= starIndex - 0.5) {
-                    // Half Star
-                    return (
-                      <div key={i} className="relative">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                        </svg>
-                        <div className="absolute top-0 left-0 overflow-hidden" style={{ width: "50%" }}>
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                          </svg>
-                        </div>
-                      </div>
-                    );
-                  } else {
-                    // Empty Star
-                    return (
-                      <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    );
-                  }
-                })}
-                <span className="text-sm font-medium text-muted-foreground ml-2">
-                  ({payload?.customer_delivery_ratio}%)
-                </span>
-              </div>
-            </div>
-          )}
+          <div className="flex flex-col sm:flex-row sm:gap-8 gap-4 mb-4">
+            <StarRatingDisplay 
+              label="Store Rating"
+              rating={customerDeliveryRating} 
+              ratio={payload?.customer_delivery_ratio} 
+            />
+            <StarRatingDisplay 
+              label="Product Rating"
+              rating={productDeliveryRating} 
+              ratio={payload?.product_delivery_ratio} 
+            />
+          </div>
 
           {payload?.description && (
             <div className="mb-4 flex flex-col" ref={descriptionRef}>
@@ -719,3 +695,49 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
 };
 
 export default ProductDetail;
+
+const StarRatingDisplay = ({ rating, ratio, label }: { rating: number, ratio?: string | number, label: string }) => {
+  if (rating <= 0) return null;
+  return (
+    <div className="flex flex-col gap-2">
+      <span className="font-semibold text-base">{label}:</span>
+      <div className="flex items-center gap-1">
+        {Array.from({ length: 5 }).map((_, i) => {
+          const starIndex = i + 1;
+          if (rating >= starIndex) {
+            // Full Star
+            return (
+              <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            );
+          } else if (rating >= starIndex - 0.5) {
+            // Half Star
+            return (
+              <div key={i} className="relative">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                </svg>
+                <div className="absolute top-0 left-0 overflow-hidden" style={{ width: "50%" }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </div>
+              </div>
+            );
+          } else {
+            // Empty Star
+            return (
+              <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            );
+          }
+        })}
+        <span className="text-sm font-medium text-muted-foreground ml-2">
+          ({ratio}%)
+        </span>
+      </div>
+    </div>
+  );
+};

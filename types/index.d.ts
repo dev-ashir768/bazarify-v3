@@ -77,6 +77,7 @@ export interface ProductDetailResponse {
     default_image: string;
     default_inventory_policy: string;
     customer_delivery_ratio: string | number;
+    product_delivery_ratio: string | number;
     default_inventory: {
       id: number;
       location_id: number;
