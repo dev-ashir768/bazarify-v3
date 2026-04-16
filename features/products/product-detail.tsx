@@ -125,14 +125,58 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   }, [activeVariation, payload]);
 
   const resolvedImage = useMemo(() => {
+    if (activeVariation?.variation_image) {
+      const vUrl = activeVariation.variation_image;
+      if (vUrl.startsWith("http://") || vUrl.startsWith("https://")) {
+        return vUrl;
+      }
+      return (
+        process.env.NEXT_PUBLIC_API_BASE_URL_GET_ORIO +
+        "/uploads/" +
+        acno +
+        "/" +
+        vUrl
+      );
+    }
+    const defaultImg = payload?.default_image || "";
+    if (defaultImg.startsWith("http://") || defaultImg.startsWith("https://")) {
+      return defaultImg;
+    }
     return (
       process.env.NEXT_PUBLIC_API_BASE_URL_GET_ORIO +
       "/uploads/" +
       acno +
       "/" +
-      payload?.default_image
+      defaultImg
     );
-  }, [payload, acno]);
+  }, [payload, acno, activeVariation]);
+
+  const productImages = useMemo(() => {
+    const base = process.env.NEXT_PUBLIC_API_BASE_URL_GET_ORIO + "/uploads/" + acno + "/";
+    const imgs: string[] = [];
+    
+    if (payload?.images && Array.isArray(payload.images) && payload.images.length > 0) {
+       payload.images.forEach((img: any) => {
+         const url = typeof img === "string" ? img : img.url;
+         if (url) {
+           if (url.startsWith("http://") || url.startsWith("https://")) {
+             imgs.push(url);
+           } else {
+             imgs.push(base + url);
+           }
+         }
+       });
+    } else if (payload?.default_image) {
+       const defUrl = payload.default_image;
+       if (defUrl.startsWith("http://") || defUrl.startsWith("https://")) {
+         imgs.push(defUrl);
+       } else {
+         imgs.push(base + defUrl);
+       }
+    }
+    
+    return imgs.length > 0 ? imgs : [resolvedImage || "/images/product-placeholder.jpeg"];
+  }, [payload, acno, resolvedImage]);
 
   const activeInventoryPolicy = useMemo(() => {
     if (activeVariation) {
@@ -394,27 +438,29 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                 viewportClassName="max-h-[361px] lg:max-h-[427px]"
                 className="flex-row sm:flex-col gap-2.5 ml-0 mt-0"
               >
-                <CarouselItem className="pt-0 pl-0 basis-auto shrink-0">
-                  <button
-                    onClick={() => onThumbClick(0)}
-                    className={cn(
-                      "relative aspect-square w-20 sm:w-full rounded-xl overflow-hidden bg-card border-2 transition-all cursor-pointer",
-                      activeThumb === 0
-                        ? "border-primary"
-                        : "border-transparent",
-                    )}
-                  >
-                    <ImageFallback
-                      src={resolvedImage}
-                      alt={resolvedImage}
-                      fill
-                      className="object-cover"
-                      fallbackSrc="/images/product-placeholder.jpeg"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      loading="eager"
-                    />
-                  </button>
-                </CarouselItem>
+                {productImages.map((img, index) => (
+                  <CarouselItem key={index} className="pt-0 pl-0 basis-auto shrink-0">
+                    <button
+                      onClick={() => onThumbClick(index)}
+                      className={cn(
+                        "relative aspect-square w-20 sm:w-full rounded-xl overflow-hidden bg-card border-2 transition-all cursor-pointer",
+                        activeThumb === index
+                          ? "border-primary"
+                          : "border-transparent",
+                      )}
+                    >
+                      <ImageFallback
+                        src={img}
+                        alt={`Thumbnail ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        fallbackSrc="/images/product-placeholder.jpeg"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        loading="eager"
+                      />
+                    </button>
+                  </CarouselItem>
+                ))}
               </CarouselContent>
             </Carousel>
           </div>
@@ -428,21 +474,23 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
               className="w-full h-full [&>.overflow-hidden]:w-full [&>.overflow-hidden]:h-full cursor-zoom-in"
             >
               <CarouselContent className="w-full h-full ml-0">
-                <CarouselItem className="pl-0 h-full">
-                  <div className="relative w-full h-full *:w-full *:h-full">
-                    <Lens hovering={hovering} setHovering={setHovering}>
-                      <ImageFallback
-                        src={resolvedImage}
-                        alt={resolvedImage}
-                        fill
-                        className="object-contain"
-                        fallbackSrc="/images/product-placeholder.jpeg"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        loading="eager"
-                      />
-                    </Lens>
-                  </div>
-                </CarouselItem>
+                {productImages.map((img, index) => (
+                  <CarouselItem key={index} className="pl-0 h-full">
+                    <div className="relative w-full h-full *:w-full *:h-full">
+                      <Lens hovering={hovering} setHovering={setHovering}>
+                        <ImageFallback
+                          src={img}
+                          alt={`Product Image ${index + 1}`}
+                          fill
+                          className="object-contain"
+                          fallbackSrc="/images/product-placeholder.jpeg"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          loading="eager"
+                        />
+                      </Lens>
+                    </div>
+                  </CarouselItem>
+                ))}
               </CarouselContent>
             </Carousel>
           </div>

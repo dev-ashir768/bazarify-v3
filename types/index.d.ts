@@ -86,6 +86,10 @@ export interface ProductDetailResponse {
       location_name: string;
     }[];
     description: string;
+    images: {
+      url: string;
+      alt: string;
+    }[];
     attributes: {
       name: string;
       options: string[];
