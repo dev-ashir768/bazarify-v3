@@ -76,6 +76,7 @@ export interface ProductDetailResponse {
     default_sku_code: string;
     default_image: string;
     default_inventory_policy: string;
+    customer_delivery_ratio: string | number;
     default_inventory: {
       id: number;
       location_id: number;
@@ -83,6 +84,7 @@ export interface ProductDetailResponse {
       default: number;
       location_name: string;
     }[];
+    description: string;
     attributes: {
       name: string;
       options: string[];

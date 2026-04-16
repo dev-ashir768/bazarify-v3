@@ -27,7 +27,10 @@ import { Lens } from "@/components/ui/lens";
 import { FloatingSelect } from "@/components/ui/floating-select";
 import { CartItems, ProductVariation, SelectedAttributes } from "@/types";
 import { formattedAmount } from "@/lib/formated-amount";
-import { ProductDetailsHelper } from "@/helper_functions/product.helper";
+import {
+  INVENTORY_POLICY,
+  ProductDetailsHelper,
+} from "@/helper_functions/product.helper";
 import { useCartStore } from "@/store/useCartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
@@ -55,6 +58,8 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   const [activeThumb, setActiveThumb] = useState(0);
   const [quantity, setQuantity] = useState<number>(1);
   const [hovering, setHovering] = useState(false);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const descriptionRef = React.useRef<HTMLDivElement>(null);
   const [selectedAttributes, setSelectedAttributes] =
     useState<SelectedAttributes>({});
   const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
@@ -130,16 +135,30 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     );
   }, [payload, acno]);
 
+  const activeInventoryPolicy = useMemo(() => {
+    if (activeVariation) {
+      return activeVariation.inventory_policy;
+    }
+    return payload?.default_inventory_policy;
+  }, [activeVariation, payload]);
+
   const maxQuantity = useMemo(() => {
     if (activeVariation) {
-      return ProductDetailsHelper.getMaxInventory(activeVariation.inventory);
+      return ProductDetailsHelper.getEffectiveMaxQuantity(
+        activeVariation.inventory,
+        activeVariation.inventory_policy,
+      );
     }
-    return ProductDetailsHelper.getMaxInventory(
+    return ProductDetailsHelper.getEffectiveMaxQuantity(
       payload?.default_inventory ?? [],
+      payload?.default_inventory_policy,
     );
   }, [activeVariation, payload]);
 
-  console.log("Max Quantity:", maxQuantity);
+  // Policy-aware out-of-stock: never out of stock when policy is IGNORE_QUANTITY
+  const isOutOfStock =
+    String(activeInventoryPolicy) !== INVENTORY_POLICY.IGNORE_QUANTITY &&
+    maxQuantity <= 0;
 
   const maxInventoryItem = useMemo(() => {
     if (activeVariation) {
@@ -152,7 +171,11 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
     );
   }, [activeVariation, payload]);
 
-  const isOutOfStock = maxQuantity <= 0;
+  const customerDeliveryRating = useMemo(() => {
+    return ProductDetailsHelper.getCustomerRating(
+      payload?.customer_delivery_ratio,
+    );
+  }, [payload?.customer_delivery_ratio]);
 
   const itemRef = useMemo(() => {
     return `${productId}-${activeVariation?.variation_id ?? "default"}`;
@@ -184,7 +207,8 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
 
   const handleIncrement = useCallback(() => {
     setQuantity((prev) => {
-      if (maxQuantity === Infinity) return prev + 1;
+      // Infinity means inventory_policy = 1 (ignore quantity), no upper bound
+      if (!isFinite(maxQuantity)) return prev + 1;
       return Math.min(maxQuantity, prev + 1);
     });
   }, [maxQuantity]);
@@ -470,7 +494,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
               onClick={handleIncrement}
               disabled={
                 isOutOfStock ||
-                quantity >= maxQuantity ||
+                (isFinite(maxQuantity) && quantity >= maxQuantity) ||
                 (hasVariations && !activeVariation)
               }
               aria-label="Increase quantity"
@@ -551,6 +575,97 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
               Buy Now
             </Button>
           </div>
+
+          {customerDeliveryRating > 0 && (
+            <div className="flex flex-col gap-2 mb-4">
+              <span className="font-semibold text-base">Store Rating:</span>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const starIndex = i + 1;
+                  if (customerDeliveryRating >= starIndex) {
+                    // Full Star
+                    return (
+                      <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    );
+                  } else if (customerDeliveryRating >= starIndex - 0.5) {
+                    // Half Star
+                    return (
+                      <div key={i} className="relative">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                           <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                        </svg>
+                        <div className="absolute top-0 left-0 overflow-hidden" style={{ width: "50%" }}>
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                          </svg>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    // Empty Star
+                    return (
+                      <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    );
+                  }
+                })}
+                <span className="text-sm font-medium text-muted-foreground ml-2">
+                  ({payload?.customer_delivery_ratio}%)
+                </span>
+              </div>
+            </div>
+          )}
+
+          {payload?.description && (
+            <div className="mb-4 flex flex-col" ref={descriptionRef}>
+              <span className="font-semibold mb-2">Description:</span>
+              <div
+                className={cn(
+                  "relative transition-all duration-300",
+                  !isDescriptionExpanded && "max-h-[180px] overflow-hidden"
+                )}
+              >
+                <div
+                  className="text-sm text-muted-foreground leading-relaxed
+                  [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5
+                  [&_li]:mb-1 [&_h1]:text-lg [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-semibold
+                  [&_h3]:text-sm [&_h3]:font-semibold [&_a]:text-primary [&_a]:underline
+                  [&_strong]:font-semibold [&_em]:italic [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded-xl"
+                  dangerouslySetInnerHTML={{
+                    __html: ProductDetailsHelper.sanitizeHtml(
+                      payload.description,
+                    ),
+                  }}
+                />
+                {!isDescriptionExpanded && (
+                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-linear-to-t from-background to-transparent pointer-events-none" />
+                )}
+              </div>
+              <Button
+                variant="link"
+                onClick={() => {
+                  if (isDescriptionExpanded) {
+                    setIsDescriptionExpanded(false);
+                    // Add a slight delay to allow the collapse animation to start before scrolling
+                    setTimeout(() => {
+                      descriptionRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      });
+                    }, 50);
+                  } else {
+                    setIsDescriptionExpanded(true);
+                  }
+                }}
+                className="p-0 h-auto text-primary mt-2 font-medium self-start"
+              >
+                {isDescriptionExpanded ? "Read Less" : "Read More"}
+              </Button>
+            </div>
+          )}
 
           <div className="flex items-center gap-2 text-base">
             <span className="font-semibold">Availability:</span>

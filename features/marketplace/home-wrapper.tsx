@@ -76,9 +76,10 @@ const HomeWrapper = () => {
       ?.map((p) => Number(p.on_sale === "Y" ? p.sale_price : p.price))
       .filter((p) => !isNaN(p)) || [];
 
-  const minBound = productPrices.length > 0 ? Math.min(...productPrices) : 0;
+  // const minBound = productPrices.length > 0 ? Math.min(...productPrices) : 0;
+  const minBound = 0;
   const maxBound =
-    productPrices.length > 0 ? Math.max(...productPrices) : 10000;
+    productPrices.length > 0 ? Math.max(...productPrices) : 100000;
 
   // ========================= Render ========================= \\
   const isLoading = categoriesLoading || productsLoading;
