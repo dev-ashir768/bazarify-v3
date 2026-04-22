@@ -3,7 +3,7 @@ import { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Marketplace | Bazarify by Orio",
+  title: "Marketplace | Bazarify",
 };
 
 export default function Home() {

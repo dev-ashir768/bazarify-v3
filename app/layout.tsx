@@ -9,8 +9,8 @@ import NextTopLoader from "nextjs-toploader";
 
 export const metadata: Metadata = {
   title: {
-    default: "Bazarify by Orio",
-    template: "%s | Bazarify by Orio",
+    default: "Bazarify",
+    template: "%s | Bazarify",
   },
   description: "Bazarify is a marketplace for everything",
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL!),

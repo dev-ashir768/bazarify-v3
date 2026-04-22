@@ -1,4 +1,4 @@
-# 🛍️ Bazarify by Orio
+# 🛍️ Bazarify
 
 Bazarify is a high-performance, modern marketplace application built with **Next.js 16** and **Tailwind CSS 4**. It features a robust product management system, dynamic category filtering, and a seamless shopping cart experience, all powered by a premium UI design.
 
@@ -99,8 +99,8 @@ Bazarify is a high-performance, modern marketplace application built with **Next
 
 ## 📄 License
 
-This project is private and owned by Orio.
+This project is private.
 
 ---
 
-Built with ❤️ by the Orio Team.
+Built with ❤️ by the Ashir Arif.

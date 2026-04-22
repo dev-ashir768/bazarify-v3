@@ -20,6 +20,9 @@ interface PriceFilterProps {
 const PriceFilter = ({ minBound, maxBound }: PriceFilterProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const searchParams = useSearchParams();
+  const minParam = searchParams.get("minPrice");
+  const maxParam = searchParams.get("maxPrice");
+
   const [values, setValues] = useState(() => {
     const minParam = searchParams.get("minPrice");
     const maxParam = searchParams.get("maxPrice");
@@ -64,11 +67,20 @@ const PriceFilter = ({ minBound, maxBound }: PriceFilterProps) => {
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
-        <Button size="pill" variant="filter" className="2xl:mb-2">
+        <Button
+          size="pill"
+          variant="filter"
+          className={cn("2xl:mb-2", minParam && maxParam && "bg-[#eee0fe] border-0 hover:bg-[#eee0fe] hover:border-0 active:bg-[#eee0fe] active:border-0")}
+        >
           Price
+          {minParam && maxParam && (
+            <span className="ml-1 text-sm">
+              {minParam} to {maxParam}
+            </span>
+          )}
           <svg
             className={cn(
-              "ml-2 w-4 h-4 transition-transform duration-200",
+              "ml-2 w-5 h-5 transition-transform duration-200",
               isOpen ? "rotate-180" : "",
             )}
             fill="none"

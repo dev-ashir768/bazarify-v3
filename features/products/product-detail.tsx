@@ -152,30 +152,37 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   }, [payload, acno, activeVariation]);
 
   const productImages = useMemo(() => {
-    const base = process.env.NEXT_PUBLIC_API_BASE_URL_GET_ORIO + "/uploads/" + acno + "/";
+    const base =
+      process.env.NEXT_PUBLIC_API_BASE_URL_GET_ORIO + "/uploads/" + acno + "/";
     const imgs: string[] = [];
-    
-    if (payload?.images && Array.isArray(payload.images) && payload.images.length > 0) {
-       payload.images.forEach((img: any) => {
-         const url = typeof img === "string" ? img : img.url;
-         if (url) {
-           if (url.startsWith("http://") || url.startsWith("https://")) {
-             imgs.push(url);
-           } else {
-             imgs.push(base + url);
-           }
-         }
-       });
+
+    if (
+      payload?.images &&
+      Array.isArray(payload.images) &&
+      payload.images.length > 0
+    ) {
+      payload.images.forEach((img) => {
+        const url = typeof img === "string" ? img : img.url;
+        if (url) {
+          if (url.startsWith("http://") || url.startsWith("https://")) {
+            imgs.push(url);
+          } else {
+            imgs.push(base + url);
+          }
+        }
+      });
     } else if (payload?.default_image) {
-       const defUrl = payload.default_image;
-       if (defUrl.startsWith("http://") || defUrl.startsWith("https://")) {
-         imgs.push(defUrl);
-       } else {
-         imgs.push(base + defUrl);
-       }
+      const defUrl = payload.default_image;
+      if (defUrl.startsWith("http://") || defUrl.startsWith("https://")) {
+        imgs.push(defUrl);
+      } else {
+        imgs.push(base + defUrl);
+      }
     }
-    
-    return imgs.length > 0 ? imgs : [resolvedImage || "/images/product-placeholder.jpeg"];
+
+    return imgs.length > 0
+      ? imgs
+      : [resolvedImage || "/images/product-placeholder.jpeg"];
   }, [payload, acno, resolvedImage]);
 
   const activeInventoryPolicy = useMemo(() => {
@@ -352,47 +359,44 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   //   },
   //   [handleAddToCart, router, acno, items, itemRef],
   // );
-  const handleBuyNow = useCallback(
-    () => {
-      const data: CartItems = {
-        acno: acno,
-        item_ref: itemRef,
-        line_items: {
-          product_id: Number(productId),
-          variation_id: Number(activeVariation?.variation_id ?? 0),
-          location_id: Number(maxInventoryItem?.location_id ?? 0),
-          quantity: quantity,
-          product_image: resolvedImage,
-        },
-        product_name: payload?.product_name ?? "",
-        price: resolvedPrice!,
-        max_quantity: maxQuantity,
-      };
+  const handleBuyNow = useCallback(() => {
+    const data: CartItems = {
+      acno: acno,
+      item_ref: itemRef,
+      line_items: {
+        product_id: Number(productId),
+        variation_id: Number(activeVariation?.variation_id ?? 0),
+        location_id: Number(maxInventoryItem?.location_id ?? 0),
+        quantity: quantity,
+        product_image: resolvedImage,
+      },
+      product_name: payload?.product_name ?? "",
+      price: resolvedPrice!,
+      max_quantity: maxQuantity,
+    };
 
-      if (items.map((item) => item.item_ref).includes(itemRef)) {
-        router.push(PUBLIC_ROUTES.CART);
-        return;
-      }
-
-      buyNow(data);
+    if (items.map((item) => item.item_ref).includes(itemRef)) {
       router.push(PUBLIC_ROUTES.CART);
-    },
-    [
-      activeVariation,
-      quantity,
-      resolvedImage,
-      resolvedPrice,
-      payload?.product_name,
-      itemRef,
-      buyNow,
-      acno,
-      maxInventoryItem?.location_id,
-      productId,
-      items,
-      maxQuantity,
-      router,
-    ],
-  );
+      return;
+    }
+
+    buyNow(data);
+    router.push(PUBLIC_ROUTES.CART);
+  }, [
+    activeVariation,
+    quantity,
+    resolvedImage,
+    resolvedPrice,
+    payload?.product_name,
+    itemRef,
+    buyNow,
+    acno,
+    maxInventoryItem?.location_id,
+    productId,
+    items,
+    maxQuantity,
+    router,
+  ]);
 
   // ========================= Render ========================= \\
   if (isLoading) {
@@ -439,7 +443,10 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                 className="flex-row sm:flex-col gap-2.5 ml-0 mt-0"
               >
                 {productImages.map((img, index) => (
-                  <CarouselItem key={index} className="pt-0 pl-0 basis-auto shrink-0">
+                  <CarouselItem
+                    key={index}
+                    className="pt-0 pl-0 basis-auto shrink-0"
+                  >
                     <button
                       onClick={() => onThumbClick(index)}
                       className={cn(
@@ -497,10 +504,17 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
         </div>
 
         <div className="lg:col-span-5 xl:col-span-6 xl:max-w-125 w-full">
-          <div className="mb-4">
+          <div className="sm:mb-10 mb-7">
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-4">
               {payload?.product_name}
             </h1>
+            <StarRatingDisplay
+              rating={productDeliveryRating}
+              ratio={payload?.product_delivery_ratio}
+              className="mb-4"
+              ratioClassName="text-base ml-2"
+              size={23}
+            />
             <p className="text-xl sm:text-2xl text-muted-foreground">
               {formattedAmount(resolvedPrice!)}
             </p>
@@ -511,6 +525,12 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
             <span className="text-muted-foreground">
               {productDetail?.payload.business_name}
             </span>
+            <StarRatingDisplay
+              rating={customerDeliveryRating}
+              ratio={payload?.customer_delivery_ratio}
+              ratioClassName="text-sm"
+              size={15}
+            />
           </div>
 
           <div className="flex items-center justify-between max-w-36 xs:px-2 py-1 w-full mb-4">
@@ -629,26 +649,21 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
             </Button>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:gap-8 gap-4 mb-4">
-            <StarRatingDisplay 
-              label="Store Rating"
-              rating={customerDeliveryRating} 
-              ratio={payload?.customer_delivery_ratio} 
-            />
-            <StarRatingDisplay 
-              label="Product Rating"
-              rating={productDeliveryRating} 
-              ratio={payload?.product_delivery_ratio} 
-            />
+          <div className="flex items-center gap-2 text-base mb-4">
+            <span className="font-semibold">Availability:</span>
+            <span className="text-foreground">
+              {" "}
+              {isOutOfStock ? "Out of Stock" : "In Stock"}
+            </span>
           </div>
 
           {payload?.description && (
-            <div className="mb-4 flex flex-col" ref={descriptionRef}>
+            <div className="flex flex-col" ref={descriptionRef}>
               <span className="font-semibold mb-2">Description:</span>
               <div
                 className={cn(
                   "relative transition-all duration-300",
-                  !isDescriptionExpanded && "max-h-[180px] overflow-hidden"
+                  !isDescriptionExpanded && "max-h-[180px] overflow-hidden",
                 )}
               >
                 <div
@@ -689,14 +704,6 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
               </Button>
             </div>
           )}
-
-          <div className="flex items-center gap-2 text-base">
-            <span className="font-semibold">Availability:</span>
-            <span className="text-foreground">
-              {" "}
-              {isOutOfStock ? "Out of Stock" : "In Stock"}
-            </span>
-          </div>
         </div>
       </div>
 
@@ -744,31 +751,80 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
 
 export default ProductDetail;
 
-const StarRatingDisplay = ({ rating, ratio, label }: { rating: number, ratio?: string | number, label: string }) => {
+const StarRatingDisplay = ({
+  rating,
+  ratio,
+  label,
+  className,
+  ratioClassName,
+  size = 28,
+}: {
+  rating: number;
+  ratio?: string | number;
+  label?: string;
+  className?: string;
+  ratioClassName?: string;
+  size?: number | string;
+}) => {
   if (rating <= 0) return null;
   return (
-    <div className="flex flex-col gap-2">
-      <span className="font-semibold text-base">{label}:</span>
+    <div className={cn("flex flex-col gap-2", className)}>
+      {label && <span className="font-semibold text-base">{label}:</span>}
       <div className="flex items-center gap-1">
         {Array.from({ length: 5 }).map((_, i) => {
           const starIndex = i + 1;
+          const svgPath =
+            "M10.2997 5.4303C11.9468 2.47677 12.7697 1 14.0007 1C15.2318 1 16.0547 2.47677 17.7017 5.4303L18.1281 6.19468C18.5961 7.03446 18.8301 7.45435 19.1941 7.73124C19.5581 8.00814 20.0131 8.11083 20.9231 8.31623L21.7498 8.50342C24.9478 9.22751 26.5454 9.5889 26.9263 10.8122C27.3059 12.0341 26.2165 13.3094 24.0365 15.8587L23.4723 16.5177C22.8535 17.2418 22.5428 17.6045 22.4037 18.0517C22.2646 18.5002 22.3114 18.9838 22.405 19.9497L22.4908 20.8297C22.8197 24.2318 22.9848 25.9321 21.989 26.6874C20.9933 27.4427 19.4957 26.7537 16.5032 25.3757L15.7271 25.0195C14.8769 24.6269 14.4518 24.4319 14.0007 24.4319C13.5496 24.4319 13.1246 24.6269 12.2744 25.0195L11.4996 25.3757C8.50576 26.7537 7.0082 27.4427 6.01372 26.6887C5.01664 25.9321 5.18174 24.2318 5.51063 20.8297L5.59643 19.951C5.69003 18.9838 5.73683 18.5002 5.59643 18.053C5.45863 17.6045 5.14794 17.2418 4.52916 16.519L3.96497 15.8587C1.78492 13.3107 0.695545 12.0354 1.07514 10.8122C1.45473 9.5889 3.05499 9.22621 6.25291 8.50342L7.07969 8.31623C7.98837 8.11083 8.44206 8.00814 8.80735 7.73124C9.17265 7.45435 9.40534 7.03446 9.87333 6.19468L10.2997 5.4303Z";
+
           if (rating >= starIndex) {
             // Full Star
             return (
-              <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              <svg
+                key={i}
+                width={size}
+                height={size}
+                viewBox="0 0 28 28"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d={svgPath}
+                  fill="#FFC107"
+                  stroke="#FFC107"
+                  strokeWidth="2"
+                />
               </svg>
             );
           } else if (rating >= starIndex - 0.5) {
             // Half Star
             return (
               <div key={i} className="relative">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                <svg
+                  width={size}
+                  height={size}
+                  viewBox="0 0 28 28"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d={svgPath} stroke="#9f9d9e" strokeWidth="2" />
                 </svg>
-                <div className="absolute top-0 left-0 overflow-hidden" style={{ width: "50%" }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#FFC107" stroke="#FFC107" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                <div
+                  className="absolute top-0 left-0 overflow-hidden"
+                  style={{ width: "50%" }}
+                >
+                  <svg
+                    width={size}
+                    height={size}
+                    viewBox="0 0 28 28"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d={svgPath}
+                      fill="#FFC107"
+                      stroke="#FFC107"
+                      strokeWidth="2"
+                    />
                   </svg>
                 </div>
               </div>
@@ -776,13 +832,25 @@ const StarRatingDisplay = ({ rating, ratio, label }: { rating: number, ratio?: s
           } else {
             // Empty Star
             return (
-              <svg key={i} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              <svg
+                key={i}
+                width={size}
+                height={size}
+                viewBox="0 0 28 28"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d={svgPath} stroke="#9f9d9e" strokeWidth="2" />
               </svg>
             );
           }
         })}
-        <span className="text-sm font-medium text-muted-foreground ml-2">
+        <span
+          className={cn(
+            "text-sm font-medium text-muted-foreground ml-1",
+            ratioClassName,
+          )}
+        >
           ({ratio}%)
         </span>
       </div>
