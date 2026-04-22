@@ -80,7 +80,7 @@ const HomeWrapper = () => {
   // const maxBound =
   //   productPrices.length > 0 ? Math.max(...productPrices) : 100000;
   const minBound = 0;
-  const maxBound = 100000;
+  const maxBound = 10000;
 
   // ========================= Render ========================= \\
   const isLoading = categoriesLoading || productsLoading;
