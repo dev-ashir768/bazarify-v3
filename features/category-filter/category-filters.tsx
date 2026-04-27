@@ -61,7 +61,10 @@ const CategoryFilters = ({ minBound, maxBound }: CategoryFiltersProps) => {
 
   return (
     <div className="w-full overflow-hidden">
-      <div className="container flex items-center justify-start sm:justify-center gap-3 sm:gap-6 overflow-x-auto no-scrollbar pb-2 sm:pb-0 flex-nowrap sm:flex-wrap">
+      <div className=" container flex items-center justify-between">
+        <h2 className="text-2xl lg:text-3xl font-semibold">Marketplace</h2>
+      <div className=" flex items-center justify-end sm:justify-end gap-3 sm:gap-6 overflow-x-auto no-scrollbar pb-2 sm:pb-0 flex-nowrap sm:flex-wrap">
+        
         {categories?.payload?.map((category) => {
           const isSelected = activeCategory === category.name.toLowerCase();
 
@@ -92,6 +95,7 @@ const CategoryFilters = ({ minBound, maxBound }: CategoryFiltersProps) => {
             maxBound={maxBound}
           />
         </div>
+      </div>
       </div>
     </div>
   );

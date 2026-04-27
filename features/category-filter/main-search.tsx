@@ -61,7 +61,7 @@ const MainSearch = () => {
       <form
         onSubmit={(e) => e.preventDefault()}
         id="search-form"
-        className="w-[90%] md:w-[60%] h-16 mx-auto bg-background flex justify-center items-center py-3 pl-8 pr-3 rounded-full mb-1"
+        className="w-[90%] md:w-[60%] h-12 mx-auto bg-[#F1F2F2] flex justify-center items-center py-3 pl-8 pr-3 rounded-full mb-1"
         style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}
       >
         <Input
@@ -74,7 +74,7 @@ const MainSearch = () => {
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              className="size-12 [&_svg:not([class*='size-'])]:size-6 rounded-full"
+              className="size-10 [&_svg:not([class*='size-'])]:size-5 rounded-full"
               size="icon-lg"
               type="submit"
               form="search-form"

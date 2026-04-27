@@ -76,6 +76,8 @@ const HomeWrapper = () => {
       ?.map((p) => Number(p.on_sale === "Y" ? p.sale_price : p.price))
       .filter((p) => !isNaN(p)) || [];
 
+      console.log("productPrices", productPrices);
+
   // const minBound = productPrices.length > 0 ? Math.min(...productPrices) : 0;
   // const maxBound =
   //   productPrices.length > 0 ? Math.max(...productPrices) : 100000;
@@ -123,7 +125,9 @@ const HomeWrapper = () => {
     <>
       <section className="pb-8">
         <HomeHero />
-        <CategoryFilters minBound={minBound} maxBound={maxBound} />
+        
+          <CategoryFilters minBound={minBound} maxBound={maxBound} />
+        
       </section>
       <section className="container pb-20">
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 sm:gap-8">
