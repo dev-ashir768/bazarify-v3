@@ -35,6 +35,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { getCloudinaryFetchUrl } from "@/lib/cloudinary";
 
 interface FlyingItem {
   id: number;
@@ -359,6 +360,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
   //   },
   //   [handleAddToCart, router, acno, items, itemRef],
   // );
+
   const handleBuyNow = useCallback(() => {
     const data: CartItems = {
       acno: acno,
@@ -457,7 +459,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                       )}
                     >
                       <ImageFallback
-                        src={img}
+                        src={getCloudinaryFetchUrl(img, 200)}
                         alt={`Thumbnail ${index + 1}`}
                         fill
                         className="object-cover"
@@ -486,7 +488,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
                     <div className="relative w-full h-full *:w-full *:h-full">
                       <Lens hovering={hovering} setHovering={setHovering}>
                         <ImageFallback
-                          src={img}
+                          src={getCloudinaryFetchUrl(img, 1000)}
                           alt={`Product Image ${index + 1}`}
                           fill
                           className="object-contain"
@@ -736,7 +738,7 @@ const ProductDetail = ({ productId, acno }: ProductDetailProps) => {
           >
             <div className="relative w-full h-full bg-primary flex items-center justify-center p-1">
               <Image
-                src={item.image}
+                src={getCloudinaryFetchUrl(item.image, 100)}
                 alt="flying-item"
                 fill
                 className="w-full h-full object-cover rounded-full"

@@ -5,6 +5,7 @@ import { PUBLIC_ROUTES } from "@/lib/constants";
 import ImageFallback from "@/lib/image-fallback";
 import { ProductListResponse } from "@/types";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getCloudinaryFetchUrl } from "@/lib/cloudinary";
 
 const ProductCard = ({
   id,
@@ -38,6 +39,16 @@ const ProductCard = ({
     );
   };
 
+  const originalImageUrl = image?.startsWith("http")
+    ? image
+    : process.env.NEXT_PUBLIC_API_BASE_URL_GET_ORIO +
+      "/uploads/" +
+      acno +
+      "/" +
+      image;
+
+  const optimizedImageUrl = getCloudinaryFetchUrl(originalImageUrl, 400);
+
   return (
     <>
       <div
@@ -50,18 +61,8 @@ const ProductCard = ({
             alt={image}
             fill
             className="object-contain transition-transform duration-300 ease-in-out hover:scale-105"
-            src={
-              image?.startsWith("http")
-                ? image
-                : process.env.NEXT_PUBLIC_API_BASE_URL_GET_ORIO +
-                  "/uploads/" +
-                  acno +
-                  "/" +
-                  image
-            }
-            fallbackSrc={
-              "/images/product-placeholder.jpeg"
-            }
+            src={optimizedImageUrl}
+            fallbackSrc={"/images/product-placeholder.jpeg"}
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             loading="eager"
           />
