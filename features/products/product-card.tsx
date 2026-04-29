@@ -33,7 +33,7 @@ const ProductCard = ({
   // ========================= Handler ========================= \\
   const handleProductClick = () => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("category", categoryNames?.toString().toLowerCase() || "");
+    params.set("category", categoryNames?.toString().toLowerCase() || "all");
     router.push(
       `${PUBLIC_ROUTES.PRODUCTS.replaceAll(":id", id).replaceAll(":acno", acno)}?${params.toString()}`,
     );

@@ -60,42 +60,40 @@ const CategoryFilters = ({ minBound, maxBound }: CategoryFiltersProps) => {
     );
 
   return (
-    <div className="w-full overflow-hidden">
-      <div className=" container flex items-center justify-between">
+    <div className="w-full overflow-hidden mt-4">
+      <div className="container flex md:flex-row flex-col gap-2 md:gap-0 items-start md:items-center justify-between">
         <h2 className="text-2xl lg:text-3xl font-semibold">Marketplace</h2>
-      <div className=" flex items-center justify-end sm:justify-end gap-3 sm:gap-6 overflow-x-auto no-scrollbar pb-2 sm:pb-0 flex-nowrap sm:flex-wrap">
-        
-        {categories?.payload?.map((category) => {
-          const isSelected = activeCategory === category.name.toLowerCase();
+        <div className="max-w-full flex items-center justify-start sm:justify-end gap-3 sm:gap-6 overflow-x-auto no-scrollbar pb-2 sm:pb-0 flex-nowrap sm:flex-wrap">
+          {categories?.payload?.map((category) => {
+            const isSelected = activeCategory === category.name.toLowerCase();
 
-          return (
-            <div key={category.id}>
-              <Button
-                size="pill"
-                variant="filter"
-                className={cn(
-                  "2xl:mb-2",
-                  isSelected &&
-                    "bg-primary text-primary-foreground hover:bg-primary/80",
-                  category.id === 10 &&
-                    (activeCategory === "all" || !activeCategory) &&
-                    "bg-primary text-primary-foreground hover:bg-primary/80",
-                )}
-                onClick={() => handleFilter(category.name)}
-              >
-                {category.name}
-              </Button>
-            </div>
-          );
-        })}
-        <div>
-          <PriceFilter
-            key={`${activeCategory}-${searchParams.get("minPrice")}-${searchParams.get("maxPrice")}`}
-            minBound={minBound}
-            maxBound={maxBound}
-          />
+            return (
+              <div key={category.id}>
+                <Button
+                  size="pill"
+                  variant="filter"
+                  className={cn(
+                    isSelected &&
+                      "bg-primary text-primary-foreground hover:bg-primary/80",
+                    category.id === 10 &&
+                      (activeCategory === "all" || !activeCategory) &&
+                      "bg-primary text-primary-foreground hover:bg-primary/80",
+                  )}
+                  onClick={() => handleFilter(category.name)}
+                >
+                  {category.name}
+                </Button>
+              </div>
+            );
+          })}
+          <div>
+            <PriceFilter
+              key={`${activeCategory}-${searchParams.get("minPrice")}-${searchParams.get("maxPrice")}`}
+              minBound={minBound}
+              maxBound={maxBound}
+            />
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );

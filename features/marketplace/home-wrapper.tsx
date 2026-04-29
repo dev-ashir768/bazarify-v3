@@ -33,7 +33,7 @@ const HomeWrapper = () => {
   )?.id;
 
   const data: GetProductsListParams = {
-    categoryId: categoryId ? [categoryId || 10] : undefined,
+    categoryId: categoryId ? [categoryId] : [10],
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
     minPrice: minPrice ? Number(minPrice) : undefined,
     search: search ? search : undefined,
@@ -76,7 +76,7 @@ const HomeWrapper = () => {
       ?.map((p) => Number(p.on_sale === "Y" ? p.sale_price : p.price))
       .filter((p) => !isNaN(p)) || [];
 
-      console.log("productPrices", productPrices);
+  console.log("productPrices", productPrices);
 
   // const minBound = productPrices.length > 0 ? Math.min(...productPrices) : 0;
   // const maxBound =
@@ -123,11 +123,10 @@ const HomeWrapper = () => {
 
   return (
     <>
-      <section className="pb-8">
+      <section className="pb-10">
         <HomeHero />
-        
-          <CategoryFilters minBound={minBound} maxBound={maxBound} />
-        
+
+        <CategoryFilters minBound={minBound} maxBound={maxBound} />
       </section>
       <section className="container pb-20">
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 sm:gap-8">
