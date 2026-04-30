@@ -55,7 +55,7 @@ const Navbar = () => {
                 alt="Logo"
                 width={130}
                 height={90}
-                className="w-[100px] md:w-[130px] h-auto"
+                className="w-[100px] md:w-[140px] h-auto"
                 loading="eager"
                 priority
               />
@@ -104,7 +104,7 @@ const Navbar = () => {
             <Button
               variant="ghost"
               size="lg"
-              className="hover:bg-transparent text-base! gap-2 [&_svg:not([class*='size-'])]:size-5"
+              className="hover:bg-transparent text-sm! gap-2 [&_svg:not([class*='size-'])]:size-4.5"
               asChild
             >
               <Link href="/cart">
@@ -124,7 +124,7 @@ const Navbar = () => {
                       strokeLinejoin="round"
                     />
                   </svg>
-                  <span className="absolute -top-1.5 -right-2 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white border-2 border-background">
+                  <span className="absolute -top-1.5 -right-2 flex h-[15px] w-[15px] items-center justify-center rounded-full bg-primary text-[9px] font-bold text-white border-2 border-background">
                     {totalItems}
                   </span>
                 </span>

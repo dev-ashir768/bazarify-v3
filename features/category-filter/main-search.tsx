@@ -61,8 +61,7 @@ const MainSearch = () => {
       <form
         onSubmit={(e) => e.preventDefault()}
         id="search-form"
-        className="w-[90%] md:w-[60%] h-12 mx-auto bg-[#F1F2F2] flex justify-center items-center py-3 pl-8 pr-3 rounded-full mb-1"
-        style={{ boxShadow: "rgba(99, 99, 99, 0.2) 0px 2px 8px 0px" }}
+        className="w-full md:w-[60%] h-12 mx-auto bg-[#F1F2F2] flex justify-center items-center py-3 pl-8 pr-3 rounded-full mb-1"
       >
         <Input
           {...register("search")}

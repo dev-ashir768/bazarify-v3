@@ -235,6 +235,50 @@ function CarouselNext({
   )
 }
 
+function CarouselDots({ className, ...props }: React.ComponentProps<"div">) {
+  const { api } = useCarousel()
+  const [selectedIndex, setSelectedIndex] = React.useState(0)
+  const [scrollSnaps, setScrollSnaps] = React.useState<number[]>([])
+
+  const onSelect = React.useCallback((api: CarouselApi) => {
+    if (!api) return
+    setSelectedIndex(api.selectedScrollSnap())
+  }, [])
+
+  React.useEffect(() => {
+    if (!api) return
+    setScrollSnaps(api.scrollSnapList())
+    onSelect(api)
+    api.on("select", onSelect)
+    api.on("reInit", onSelect)
+  }, [api, onSelect])
+
+  return (
+    <div
+      className={cn(
+        "flex items-center justify-center gap-1.5 p-2 rounded-full bg-black/20 backdrop-blur-sm",
+        className
+      )}
+      {...props}
+    >
+      {scrollSnaps.map((_, index) => (
+        <button
+          key={index}
+          className={cn(
+            "h-1.5 rounded-full transition-all duration-300 cursor-pointer",
+            index === selectedIndex
+              ? "bg-white w-5"
+              : "bg-white/50 hover:bg-white/80 w-1.5"
+          )}
+          onClick={() => api?.scrollTo(index)}
+        >
+          <span className="sr-only">Go to slide {index + 1}</span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
 export {
   type CarouselApi,
   Carousel,
@@ -242,5 +286,6 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  CarouselDots,
   useCarousel,
 }
